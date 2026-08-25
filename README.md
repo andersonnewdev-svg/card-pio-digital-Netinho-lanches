@@ -2,6 +2,8 @@
 
 Cardápio digital responsivo desenvolvido para hamburguerias e lanchonetes, permitindo que o cliente escolha produtos, monte seu pedido e finalize diretamente pelo WhatsApp.
 
+<img width="1359" height="648" alt="Captura de tela 2026-08-25 200923" src="https://github.com/user-attachments/assets/0203b7e3-3aa6-4507-9f15-7f8de3e124ad" />
+
 ## 🌐 Demonstração
 
 O projeto está publicado online através do GitHub Pages.
