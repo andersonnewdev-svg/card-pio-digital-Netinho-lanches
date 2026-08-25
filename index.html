@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Nettinho Lanches - Hambúrguer Artesanal">
+
+    <title>
+        Nettinho Lanches
+    </title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+     HEADER
+========================================= -->
+
+    <header class="header">
+
+        <div class="header-container">
+
+
+            <!-- LOGO -->
+
+            <div class="logo">
+
+                <div class="logo-icon">
+                    🍔
+                </div>
+
+                <div class="logo-text">
+
+                    <h1>
+                        NETTINHO
+                    </h1>
+
+                    <span>
+                        HAMBURGUER ARTESANAL
+                    </span>
+
+                    <small>
+                        DESDE 2021
+                    </small>
+
+                </div>
+
+                <strong class="logo-lanches">
+                    Lanches
+                </strong>
+            </div>
+
+            <!-- WHATSAPP -->
+
+            <div class="contato-header">
+
+                <span>
+                    FAÇA SEU PEDIDO
+                </span>
+
+                <strong>
+                    🟢 (88) 9 9713-1293
+                </strong>
+
+            </div>
+
+
+        </div>
+
+    </header>
+
+
+
+    <!-- =========================================
+     MENU DE CATEGORIAS
+========================================= -->
+
+    <nav class="categorias">
+
+        <button class="categoria ativa" onclick="filtrarCategoria('todos')">
+
+            <span>🍔</span>
+
+            <small>
+                TODOS
+            </small>
+
+        </button>
+
+
+        <button class="categoria" onclick="filtrarCategoria('burgueres')">
+
+            <span>🍔</span>
+
+            <small>
+                BURGUER'S
+            </small>
+
+        </button>
+
+
+        <button class="categoria" onclick="filtrarCategoria('combos')">
+
+            <span>🍟</span>
+
+            <small>
+                COMBOS
+            </small>
+
+        </button>
+
+
+        <button class="categoria" onclick="filtrarCategoria('especiais')">
+
+            <span>⭐</span>
+
+            <small>
+                ESPECIAIS
+            </small>
+
+        </button>
+
+
+        <button class="categoria" onclick="filtrarCategoria('hotdogs')">
+
+            <span>🌭</span>
+
+            <small>
+                HOT-DOG'S
+            </small>
+
+        </button>
+
+
+        <button class="categoria" onclick="filtrarCategoria('pastel')">
+
+            <span>🥟</span>
+
+            <small>
+                PASTEL
+            </small>
+
+        </button>
+
+
+        <button class="categoria" onclick="filtrarCategoria('massas')">
+
+            <span>🍝</span>
+
+            <small>
+                MASSAS
+            </small>
+
+        </button>
+
+
+        <button class="categoria" onclick="filtrarCategoria('bebidas')">
+
+            <span>🥤</span>
+
+            <small>
+                BEBIDAS
+            </small>
+
+        </button>
+
+
+        <button class="categoria" onclick="filtrarCategoria('adicionais')">
+
+            <span>➕</span>
+
+            <small>
+                ADICIONAIS
+            </small>
+
+        </button>
+
+    </nav>
+
+
+
+    <!-- =========================================
+     CONTEÚDO
+========================================= -->
+
+    <main class="layout">
+
+
+        <!-- =====================================
+         ÁREA PRINCIPAL
+    ====================================== -->
+
+        <section class="conteudo">
+
+
+            <!-- BUSCA -->
+
+            <div class="barra-topo">
+
+                <div class="busca">
+
+                    <input type="text" id="campo-busca" placeholder="Digite para buscar um produto..."
+                        oninput="buscarProdutos()">
+
+                    <span>
+                        🔍
+                    </span>
+
+                </div>
+
+
+                <select id="ordenacao" onchange="ordenarProdutos()">
+
+                    <option value="destaques">
+                        🔥 Mais vendidos
+                    </option>
+
+                    <option value="menor">
+                        Menor preço
+                    </option>
+
+                    <option value="maior">
+                        Maior preço
+                    </option>
+
+                    <option value="az">
+                        A-Z
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <!-- =================================
+             DESTAQUES
+        ================================== -->
+
+            <section class="secao" id="secao-destaques">
+
+                <div class="titulo-secao">
+
+                    <h2>
+                        ⭐ DESTAQUES
+                    </h2>
+
+                </div>
+
+
+                <div class="produtos-grid" id="produtos-destaques">
+
+                    <!-- JS -->
+
+                </div>
+
+            </section>
+
+
+
+            <!-- =================================
+             TODOS OS PRODUTOS
+        ================================== -->
+
+            <section class="secao">
+
+                <div class="titulo-secao">
+
+                    <h2>
+                        🍔 CARDÁPIO
+                    </h2>
+
+                </div>
+
+
+                <div class="produtos-grid" id="lista-produtos">
+
+                    <!-- JS -->
+
+                </div>
+
+            </section>
+
+
+        </section>
+
+
+
+        <!-- =====================================
+         SIDEBAR
+    ====================================== -->
+
+        <aside class="sidebar">
+
+
+            <!-- =================================
+             CARRINHO
+        ================================== -->
+
+            <div class="box carrinho-box">
+
+
+                <div class="box-titulo">
+
+                    <h2>
+
+                        🛒 SEU PEDIDO
+
+                        <span id="contador-carrinho">
+                            0
+                        </span>
+
+                    </h2>
+
+                </div>
+
+
+                <div id="itens-carrinho" class="itens-carrinho">
+
+                    <div class="carrinho-vazio">
+
+                        Seu carrinho está vazio.
+
+                        <br>
+
+                        Adicione um produto
+                        para começar.
+
+                    </div>
+
+                </div>
+
+
+                <div class="resumo">
+
+                    <div>
+
+                        <span>
+                            Subtotal
+                        </span>
+
+                        <strong id="subtotal">
+                            R$ 0,00
+                        </strong>
+
+                    </div>
+
+
+                    <div class="total">
+
+                        <span>
+                            TOTAL
+                        </span>
+
+                        <strong id="total">
+                            R$ 0,00
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================
+             INFORMAÇÕES DO PEDIDO
+        ================================== -->
+
+            <div class="box checkout-box">
+
+
+                <h2>
+                    INFORMAÇÕES DO PEDIDO
+                </h2>
+
+
+                <!-- NOME -->
+
+                <label for="nome-cliente">
+                    Nome completo
+                </label>
+
+                <input type="text" id="nome-cliente" placeholder="Ex.: Anderson da Silva">
+
+
+                <!-- TELEFONE -->
+
+                <label>
+                    Telefone / WhatsApp
+                </label>
+
+                <input type="tel" id="telefone-cliente" placeholder="Ex.: (88) 9 9713-1293">
+
+
+                <!-- TIPO DO PEDIDO -->
+
+                <label>
+                    Entrega ou Retirada
+                </label>
+
+                <div class="tipo-pedido">
+
+                    <label>
+
+                        <input type="radio" name="tipoPedido" value="Entrega" checked onchange="alternarEntrega()">
+
+                        Entrega
+
+                    </label>
+
+
+                    <label>
+
+                        <input type="radio" name="tipoPedido" value="Retirada" onchange="alternarEntrega()">
+
+                        Retirada no local
+
+                    </label>
+
+                </div>
+
+
+                <!-- ENDEREÇO -->
+
+                <div id="dados-entrega">
+
+                    <label>
+                        Endereço de entrega
+                    </label>
+
+                    <input type="text" id="endereco" placeholder="Rua, número, bairro, cidade...">
+
+
+                    <label>
+                        Ponto de referência
+                    </label>
+
+                    <input type="text" id="referencia" placeholder="Ex.: Próximo ao mercadinho">
+
+                </div>
+
+
+                <!-- PAGAMENTO -->
+
+                <label>
+                    Forma de pagamento
+                </label>
+
+                <select id="pagamento" onchange="alternarTroco()">
+
+                    <option value="">
+                        Selecione
+                    </option>
+
+                    <option value="PIX">
+                        PIX
+                    </option>
+
+                    <option value="Dinheiro">
+                        Dinheiro
+                    </option>
+
+                    <option value="Cartão de Crédito">
+                        Cartão de Crédito
+                    </option>
+
+                    <option value="Cartão de Débito">
+                        Cartão de Débito
+                    </option>
+
+                </select>
+
+
+                <!-- TROCO -->
+
+                <div id="campo-troco" class="campo-troco">
+
+                    <label>
+                        Troco para quanto?
+                    </label>
+
+                    <input type="number" id="troco" placeholder="Ex.: 50,00" step="0.01">
+
+                </div>
+
+
+                <!-- OBSERVAÇÃO -->
+
+                <label>
+                    Observações do pedido
+                </label>
+
+                <textarea id="observacao" maxlength="120"
+                    placeholder="Ex.: Sem cebola, ponto da carne, etc..."></textarea>
+
+
+                <!-- FINALIZAR -->
+
+                <button class="btn-finalizar" onclick="finalizarPedido()">
+
+                    <span>
+                        🟢
+                    </span>
+
+                    <div>
+
+                        <strong>
+                            FINALIZAR PEDIDO
+                        </strong>
+
+                        <small>
+                            ENVIAR PARA WHATSAPP
+                        </small>
+
+                    </div>
+
+                </button>
+
+
+                <div class="seguranca">
+
+                    🔒 Seus dados são utilizados para processar e acompanhar seu pedido.
+
+                </div>
+
+            </div>
+
+
+
+            <!-- =================================
+             MENSAGEM
+        ================================== -->
+
+            <div class="box mensagem">
+
+                <h3>
+                    Obrigado pela preferência! ❤️
+                </h3>
+
+                <p>
+                    Nossos clientes são nossos parceiros.
+                    Obrigado por fazer parte da nossa história.
+                </p>
+
+                <p>
+                    📍 Onde você está é sempre o melhor
+                    lugar para começar.
+                </p>
+
+            </div>
+
+
+        </aside>
+
+    </main>
+
+
+
+    <!-- =========================================
+     MODAL DO PRODUTO
+========================================= -->
+
+    <div id="modal-produto" class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-nome">
+
+        <div class="modal-conteudo">
+
+
+            <button type="button" class="modal-fechar" onclick="fecharModal()" aria-label="Fechar">
+                ✕
+            </button>
+
+
+            <img id="modal-imagem" src="" alt="">
+
+
+            <div class="modal-info">
+
+                <h2 id="modal-nome">
+                </h2>
+
+
+                <p id="modal-descricao">
+                </p>
+
+
+                <strong id="modal-preco">
+                </strong>
+
+
+                <!-- ADICIONAIS -->
+
+                <div id="modal-adicionais" class="adicionais">
+
+                    <h3>
+                        Adicionais
+                    </h3>
+
+                    <!-- JS -->
+
+                </div>
+
+
+                <!-- OBSERVAÇÃO -->
+
+                <textarea id="modal-observacao" placeholder="Alguma observação para este item?"></textarea>
+
+
+                <!-- QUANTIDADE -->
+
+                <div class="modal-controle">
+
+                    <button onclick="alterarQuantidadeModal(-1)">
+                        -
+                    </button>
+
+
+                    <span id="modal-quantidade">
+                        1
+                    </span>
+
+
+                    <button onclick="alterarQuantidadeModal(1)">
+                        +
+                    </button>
+
+                </div>
+
+
+                <button class="btn-modal-adicionar" onclick="adicionarProdutoModal()">
+
+                    ➕ ADICIONAR AO PEDIDO
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================
+     BOTÃO MOBILE CARRINHO
+========================================= -->
+
+    <button class="botao-carrinho-mobile" onclick="abrirCarrinhoMobile()">
+
+        🛒
+
+        <span>
+            Ver pedido
+        </span>
+
+        <strong id="total-mobile">
+            R$ 0,00
+        </strong>
+
+    </button>
+
+
+
+    <!-- JAVASCRIPT -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config/supabase.js"></script>
+    <script src="script.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Painel Administrativo - Nettinho Lanches">
+
+    <title>
+        Admin | Nettinho Lanches
+    </title>
+
+    <link rel="stylesheet" href="admin.css">
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================
+         LOGIN
+    ====================================== -->
+
+    <section id="loginScreen" class="login-screen">
+
+        <div class="login-card">
+
+            <div class="login-logo">
+                🍔
+            </div>
+
+            <h1>
+                Nettinho Lanches
+            </h1>
+
+            <p>
+                Painel Administrativo
+            </p>
+
+
+            <form id="loginForm">
+
+                <input type="email" id="username" placeholder="E-mail do administrador" autocomplete="email" required>
+
+                <input type="password" id="password" placeholder="Senha" autocomplete="current-password" required>
+
+                <button type="submit">
+                    Entrar
+                </button>
+
+            </form>
+
+
+            <p id="loginError" class="login-error"></p>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- =====================================
+         PAINEL ADMINISTRATIVO
+    ====================================== -->
+
+    <section id="adminPanel" class="admin-panel hidden">
+
+
+        <!-- =================================
+             HEADER
+        ================================== -->
+
+        <header class="admin-header">
+
+            <div>
+
+                <h1>
+                    🍔 Nettinho Lanches
+                </h1>
+
+                <span>
+                    Painel Administrativo
+                </span>
+
+            </div>
+
+
+            <button type="button" id="logoutButton" class="logout-button">
+                Sair
+            </button>
+
+        </header>
+
+
+
+        <!-- =================================
+             CONTEÚDO PRINCIPAL
+        ================================== -->
+
+        <main class="admin-content">
+
+
+            <!-- =====================================
+                 CONFIGURAÇÕES DA LOJA
+            ====================================== -->
+
+            <section class="store-settings-section">
+
+                <div class="products-header">
+
+                    <div>
+
+                        <h2>
+                            ⚙️ Configurações da Loja
+                        </h2>
+
+                        <p>
+                            Gerencie as informações gerais do estabelecimento.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form id="storeSettingsForm" class="store-settings-form">
+
+                    <input type="hidden" id="storeSettingsId">
+
+
+                    <label for="storeName">
+                        Nome da loja
+                    </label>
+
+                    <input type="text" id="storeName" required>
+
+
+                    <label for="storeWhatsapp">
+                        WhatsApp dos pedidos
+                    </label>
+
+                    <input type="text" id="storeWhatsapp" placeholder="5588999999999" inputmode="numeric" required>
+
+
+                    <label for="storeAddress">
+                        Endereço
+                    </label>
+
+                    <input type="text" id="storeAddress">
+
+
+                    <label for="deliveryFee">
+                        Taxa de entrega
+                    </label>
+
+                    <input type="number" id="deliveryFee" min="0" step="0.01">
+
+
+                    <label for="minimumOrder">
+                        Pedido mínimo
+                    </label>
+
+                    <input type="number" id="minimumOrder" min="0" step="0.01">
+
+
+                    <label for="openingTime">
+                        Horário de abertura
+                    </label>
+
+                    <input type="time" id="openingTime">
+
+
+                    <label for="closingTime">
+                        Horário de fechamento
+                    </label>
+
+                    <input type="time" id="closingTime">
+
+
+                    <label class="available-check" for="storeOpen">
+
+                        <input type="checkbox" id="storeOpen">
+
+                        Loja aberta
+
+                    </label>
+
+
+                    <button type="submit" class="save-button">
+                        💾 Salvar Configurações
+                    </button>
+
+                </form>
+
+            </section>
+
+
+
+            <!-- =====================================
+                 DASHBOARD DE PRODUTOS
+            ====================================== -->
+
+            <section class="dashboard">
+
+
+                <div class="dashboard-card">
+
+                    <span>
+                        📦
+                    </span>
+
+                    <div>
+
+                        <strong id="totalProducts">
+                            0
+                        </strong>
+
+                        <p>
+                            Total de produtos
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <span>
+                        🟢
+                    </span>
+
+                    <div>
+
+                        <strong id="availableProducts">
+                            0
+                        </strong>
+
+                        <p>
+                            Disponíveis
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="dashboard-card">
+
+                    <span>
+                        🔴
+                    </span>
+
+                    <div>
+
+                        <strong id="unavailableProducts">
+                            0
+                        </strong>
+
+                        <p>
+                            Indisponíveis
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+            </section>
+
+
+
+            <!-- =====================================
+                 PEDIDOS
+            ====================================== -->
+
+            <section class="orders-section">
+
+
+                <div class="products-header">
+
+                    <div>
+
+                        <h2>
+                            📋 Pedidos
+                        </h2>
+
+                        <p>
+                            Acompanhe os pedidos recebidos.
+                        </p>
+
+                    </div>
+
+
+                    <button type="button" id="refreshOrdersButton" class="primary-button">
+                        🔄 Atualizar Pedidos
+                    </button>
+
+                </div>
+
+
+
+                <!-- =====================================
+                     DASHBOARD DE PEDIDOS DO DIA
+                ====================================== -->
+
+                <div class="orders-dashboard">
+
+
+                    <div class="order-metric">
+
+                        <span>
+                            📦
+                        </span>
+
+                        <div>
+
+                            <strong id="todayOrdersCount">
+                                0
+                            </strong>
+
+                            <p>
+                                Pedidos hoje
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-metric">
+
+                        <span>
+                            💰
+                        </span>
+
+                        <div>
+
+                            <strong id="todayRevenue">
+                                R$ 0,00
+                            </strong>
+
+                            <p>
+                                Faturamento hoje
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-metric">
+
+                        <span>
+                            🆕
+                        </span>
+
+                        <div>
+
+                            <strong id="todayNewCount">
+                                0
+                            </strong>
+
+                            <p>
+                                Novos
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-metric">
+
+                        <span>
+                            👨‍🍳
+                        </span>
+
+                        <div>
+
+                            <strong id="todayPreparingCount">
+                                0
+                            </strong>
+
+                            <p>
+                                Preparando
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-metric">
+
+                        <span>
+                            ✅
+                        </span>
+
+                        <div>
+
+                            <strong id="todayCompletedCount">
+                                0
+                            </strong>
+
+                            <p>
+                                Concluídos
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="order-metric">
+
+                        <span>
+                            ❌
+                        </span>
+
+                        <div>
+
+                            <strong id="todayCanceledCount">
+                                0
+                            </strong>
+
+                            <p>
+                                Cancelados
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+
+
+                <!-- =====================================
+                     FILTROS DOS PEDIDOS
+                ====================================== -->
+
+                <div class="orders-filters">
+
+
+                    <button type="button" class="order-filter active" data-status="todos">
+
+                        Todos
+
+                        <span id="countTodos">
+                            0
+                        </span>
+
+                    </button>
+
+
+                    <button type="button" class="order-filter" data-status="novo">
+
+                        Novo
+
+                        <span id="countNovo">
+                            0
+                        </span>
+
+                    </button>
+
+
+                    <button type="button" class="order-filter" data-status="preparando">
+
+                        Preparando
+
+                        <span id="countPreparando">
+                            0
+                        </span>
+
+                    </button>
+
+
+                    <button type="button" class="order-filter" data-status="saiu_entrega">
+
+                        Saiu para entrega
+
+                        <span id="countSaiuEntrega">
+                            0
+                        </span>
+
+                    </button>
+
+
+                    <button type="button" class="order-filter" data-status="concluido">
+
+                        Concluído
+
+                        <span id="countConcluido">
+                            0
+                        </span>
+
+                    </button>
+
+
+                    <button type="button" class="order-filter" data-status="cancelado">
+
+                        Cancelado
+
+                        <span id="countCancelado">
+                            0
+                        </span>
+
+                    </button>
+
+
+                </div>
+
+
+
+                <!-- =====================================
+                     LISTA DE PEDIDOS
+                ====================================== -->
+
+                <section id="ordersList" class="orders-list">
+
+                    <div class="empty-products">
+
+                        Nenhum pedido carregado.
+
+                    </div>
+
+                </section>
+
+
+            </section>
+
+
+
+            <!-- =====================================
+                 PRODUTOS
+            ====================================== -->
+
+            <section class="products-header">
+
+
+                <div>
+
+                    <h2>
+                        Produtos
+                    </h2>
+
+                    <p>
+                        Gerencie os produtos do cardápio.
+                    </p>
+
+                </div>
+
+
+                <button type="button" id="newProductButton" class="primary-button">
+                    + Novo Produto
+                </button>
+
+
+            </section>
+
+
+
+            <!-- =====================================
+                 BUSCA DE PRODUTOS
+            ====================================== -->
+
+            <input type="text" id="adminSearch" class="admin-search" placeholder="🔎 Buscar produto...">
+
+
+
+            <!-- =====================================
+                 LISTA DE PRODUTOS
+            ====================================== -->
+
+            <section id="adminProducts" class="admin-products">
+            </section>
+
+
+        </main>
+
+
+    </section>
+
+
+
+    <!-- =====================================
+         MODAL PRODUTO
+    ====================================== -->
+
+    <div id="productModal" class="product-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+
+
+        <div class="product-modal-content">
+
+
+            <div class="modal-header">
+
+
+                <h2 id="modalTitle">
+                    Novo Produto
+                </h2>
+
+
+                <button type="button" id="closeProductModal" aria-label="Fechar">
+                    ×
+                </button>
+
+
+            </div>
+
+
+
+            <form id="productForm">
+
+
+                <input type="hidden" id="productId">
+
+
+                <label for="productName">
+                    Nome do produto
+                </label>
+
+                <input type="text" id="productName" required>
+
+
+                <label for="productCategory">
+                    Categoria
+                </label>
+
+                <select id="productCategory" required>
+
+                    <option value="burgers">
+                        Burguer's
+                    </option>
+
+                    <option value="combos">
+                        Combos
+                    </option>
+
+                    <option value="especiais">
+                        Especiais
+                    </option>
+
+                    <option value="hotdogs">
+                        Hot-Dog's
+                    </option>
+
+                    <option value="pasteis">
+                        Pastéis
+                    </option>
+
+                    <option value="massas">
+                        Massas
+                    </option>
+
+                    <option value="bebidas">
+                        Bebidas
+                    </option>
+
+                    <option value="adicionais">
+                        Adicionais
+                    </option>
+
+                </select>
+
+
+                <label for="productPrice">
+                    Preço
+                </label>
+
+                <input type="number" id="productPrice" min="0" step="0.01" required>
+
+
+                <label for="productDescription">
+                    Descrição
+                </label>
+
+                <textarea id="productDescription" rows="4" required></textarea>
+
+
+                <label for="productImage">
+                    URL da imagem
+                </label>
+
+                <input type="url" id="productImage" placeholder="https://...">
+
+
+                <label class="available-check" for="productAvailable">
+
+                    <input type="checkbox" id="productAvailable" checked>
+
+                    Produto disponível
+
+                </label>
+
+
+                <button type="submit" class="save-button">
+                    Salvar Produto
+                </button>
+
+
+            </form>
+
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- =====================================
+         TOAST - NOVO PEDIDO
+    ====================================== -->
+
+    <div id="orderToast" class="order-toast" role="status" aria-live="polite">
+
+        <div class="order-toast-icon">
+            🔔
+        </div>
+
+
+        <div class="order-toast-content">
+
+            <strong>
+                Novo pedido!
+            </strong>
+
+            <span id="orderToastMessage">
+                Um novo pedido foi recebido.
+            </span>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================
+         JAVASCRIPT
+    ====================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config/supabase.js"></script>
+
+    <script src="admin.js"></script>
+
+
+</body>
+
+</html>

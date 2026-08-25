@@ -1,0 +1,1306 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+
+body {
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #f4f4f4;
+
+    color: #222;
+
+}
+
+
+/* =========================
+   LOGIN
+========================= */
+
+.login-screen {
+
+    min-height: 100vh;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    padding: 20px;
+
+    background: #111;
+
+}
+
+
+.login-card {
+
+    width: 100%;
+
+    max-width: 420px;
+
+    background: white;
+
+    padding: 40px;
+
+    border-radius: 20px;
+
+    text-align: center;
+
+    box-shadow:
+        0 20px 50px rgba(0, 0, 0, .3);
+
+}
+
+
+.login-logo {
+
+    font-size: 60px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.login-card h1 {
+
+    margin-bottom: 5px;
+
+}
+
+
+.login-card p {
+
+    color: #777;
+
+    margin-bottom: 25px;
+
+}
+
+
+.login-card form {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+
+}
+
+
+.login-card input {
+
+    width: 100%;
+
+    padding: 15px;
+
+    border:
+
+        1px solid #ddd;
+
+    border-radius: 8px;
+
+    outline: none;
+
+}
+
+
+.login-card button {
+
+    padding: 15px;
+
+    background: #111;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+}
+
+
+.login-error {
+
+    color: #d00 !important;
+
+    margin-top: 15px;
+
+}
+
+
+.hidden {
+
+    display: none !important;
+
+}
+
+
+/* =========================
+   HEADER
+========================= */
+
+.admin-header {
+
+    background: #111;
+
+    color: white;
+
+    padding: 20px 8%;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+.admin-header span {
+
+    color: #aaa;
+
+}
+
+
+.logout-button {
+
+    border: none;
+
+    padding: 10px 20px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+}
+
+
+/* =========================
+   CONTEÚDO
+========================= */
+
+.admin-content {
+
+    max-width: 1400px;
+
+    margin: auto;
+
+    padding: 40px 8%;
+
+}
+
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.dashboard {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit,
+            minmax(220px, 1fr));
+
+    gap: 20px;
+
+    margin-bottom: 40px;
+
+}
+
+
+.dashboard-card {
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 15px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 20px;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, .05);
+
+}
+
+
+.dashboard-card>span {
+
+    font-size: 40px;
+
+}
+
+
+.dashboard-card strong {
+
+    font-size: 30px;
+
+}
+
+
+.dashboard-card p {
+
+    color: #777;
+
+    margin-top: 5px;
+
+}
+
+
+/* =========================
+   CABEÇALHO PRODUTOS
+========================= */
+
+.products-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 20px;
+
+}
+
+
+.products-header p {
+
+    color: #777;
+
+    margin-top: 5px;
+
+}
+
+
+.primary-button {
+
+    background: #111;
+
+    color: white;
+
+    border: none;
+
+    padding: 13px 20px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+}
+
+
+/* =========================
+   BUSCA
+========================= */
+
+.admin-search {
+
+    width: 100%;
+
+    padding: 15px;
+
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    margin-bottom: 25px;
+
+    outline: none;
+
+}
+
+
+/* =========================
+   PRODUTOS
+========================= */
+
+.admin-products {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(auto-fit,
+            minmax(280px, 1fr));
+
+    gap: 20px;
+
+}
+
+
+.admin-product-card {
+
+    background: white;
+
+    border-radius: 15px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 20px rgba(0, 0, 0, .06);
+
+}
+
+
+.admin-product-card img {
+
+    width: 100%;
+
+    height: 180px;
+
+    object-fit: cover;
+
+}
+
+
+.admin-product-content {
+
+    padding: 20px;
+
+}
+
+
+.admin-product-content h3 {
+
+    margin-bottom: 10px;
+
+}
+
+
+.admin-price {
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    margin-bottom: 10px;
+
+}
+
+
+.status {
+
+    display: inline-block;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+
+    margin-bottom: 15px;
+
+}
+
+
+.status.available {
+
+    background: #d9f8e3;
+
+    color: #147a38;
+
+}
+
+
+.status.unavailable {
+
+    background: #ffdcdc;
+
+    color: #a00000;
+
+}
+
+
+.admin-actions {
+
+    display: grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap: 8px;
+
+}
+
+
+.admin-actions button {
+
+    padding: 10px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+}
+
+
+.edit-button {
+
+    background: #eee;
+
+}
+
+
+.toggle-button {
+
+    background: #ddd;
+
+}
+
+
+.delete-button {
+
+    background: #ffdddd;
+
+    color: #b00000;
+
+}
+
+
+/* =========================
+   MODAL
+========================= */
+
+.product-modal {
+
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background:
+        rgba(0, 0, 0, .7);
+
+    z-index: 100;
+
+    padding: 20px;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+
+.product-modal.show {
+
+    display: flex;
+
+}
+
+
+.product-modal-content {
+
+    background: white;
+
+    width: 100%;
+
+    max-width: 550px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    border-radius: 15px;
+
+    padding: 25px;
+
+}
+
+
+.modal-header {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    margin-bottom: 25px;
+
+}
+
+
+.modal-header button {
+
+    border: none;
+
+    background: none;
+
+    font-size: 30px;
+
+    cursor: pointer;
+
+}
+
+
+#productForm {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+#productForm input,
+
+#productForm select,
+
+#productForm textarea {
+
+    width: 100%;
+
+    padding: 12px;
+
+    border:
+
+        1px solid #ddd;
+
+    border-radius: 8px;
+
+    font-family: inherit;
+
+}
+
+
+.available-check {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin: 10px 0;
+
+}
+
+
+.available-check input {
+
+    width: auto !important;
+
+}
+
+
+.save-button {
+
+    margin-top: 10px;
+
+    padding: 15px;
+
+    background: #111;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 600px) {
+
+    .admin-header {
+
+        padding: 20px;
+
+    }
+
+
+    .admin-header h1 {
+
+        font-size: 20px;
+
+    }
+
+
+    .admin-content {
+
+        padding: 25px 15px;
+
+    }
+
+
+    .products-header {
+
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 15px;
+
+    }
+
+
+    .primary-button {
+
+        width: 100%;
+
+    }
+
+
+    .login-card {
+
+        padding: 30px 20px;
+
+    }
+
+}
+
+/* =========================================
+   PEDIDOS
+========================================= */
+
+.orders-section {
+    margin-top: 32px;
+    padding: 24px;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+
+/* =========================================
+   FILTROS DOS PEDIDOS
+========================================= */
+
+.orders-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+    margin-bottom: 24px;
+}
+
+
+.order-filter {
+    border: none;
+    padding: 10px 16px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    background: #f1f1f1;
+    transition: 0.2s ease;
+}
+
+
+.order-filter:hover {
+    transform: translateY(-1px);
+    background: #e5e5e5;
+}
+
+
+.order-filter.active {
+    background: #111827;
+    color: #ffffff;
+}
+
+
+/* =========================================
+   LISTA DE PEDIDOS
+========================================= */
+
+.orders-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,
+            minmax(320px, 1fr));
+    gap: 22px;
+}
+
+
+/* =========================================
+   CARD DO PEDIDO
+========================================= */
+
+.order-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+    transition: 0.2s ease;
+}
+
+
+.order-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+}
+
+
+/* =========================================
+   CABEÇALHO DO PEDIDO
+========================================= */
+
+.order-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding-bottom: 14px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+
+.order-card-header h3 {
+    margin: 0 0 5px;
+    font-size: 20px;
+}
+
+
+.order-card-header span {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+
+/* =========================================
+   STATUS
+========================================= */
+
+.order-status {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 7px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: #f3f4f6;
+    color: #374151;
+}
+
+
+/* =========================================
+   DADOS DO CLIENTE
+========================================= */
+
+.order-customer {
+    margin-bottom: 18px;
+}
+
+
+.order-customer p {
+    margin: 6px 0;
+    line-height: 1.45;
+}
+
+
+/* =========================================
+   ITENS DO PEDIDO
+========================================= */
+
+.order-items {
+    margin-bottom: 18px;
+    padding: 15px;
+    border-radius: 12px;
+    background: #f9fafb;
+}
+
+
+.order-items h4 {
+    margin-top: 0;
+    margin-bottom: 12px;
+}
+
+
+.order-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+.order-item:last-child {
+    border-bottom: none;
+}
+
+
+.order-item strong {
+    font-size: 15px;
+}
+
+
+.order-item span {
+    font-size: 14px;
+    color: #374151;
+}
+
+
+.order-item small {
+    color: #6b7280;
+    font-size: 13px;
+}
+
+
+/* =========================================
+   RESUMO FINANCEIRO
+========================================= */
+
+.order-summary {
+    padding: 15px;
+    border-radius: 12px;
+    background: #f3f4f6;
+    margin-bottom: 18px;
+}
+
+
+.order-summary p {
+    display: flex;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 7px 0;
+}
+
+
+.order-summary p:nth-child(3) {
+    font-size: 17px;
+}
+
+
+/* =========================================
+   OBSERVAÇÃO
+========================================= */
+
+.order-observation {
+    margin-bottom: 18px;
+    padding: 14px;
+    border-radius: 12px;
+    background: #fff7ed;
+}
+
+
+.order-observation p {
+    margin-bottom: 0;
+}
+
+
+/* =========================================
+   AÇÕES DOS PEDIDOS
+========================================= */
+
+.order-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+
+.order-actions button {
+    border: none;
+    border-radius: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.2s ease;
+}
+
+
+.order-actions button:hover {
+    transform: translateY(-1px);
+    opacity: 0.9;
+}
+
+
+/* NOVO */
+
+.order-actions button:nth-child(1) {
+    background: #e5e7eb;
+    color: #111827;
+}
+
+
+/* PREPARANDO */
+
+.order-actions button:nth-child(2) {
+    background: #f59e0b;
+    color: #ffffff;
+}
+
+
+/* SAIU PARA ENTREGA */
+
+.order-actions button:nth-child(3) {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+
+/* CONCLUÍDO */
+
+.order-actions button:nth-child(4) {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+
+/* CANCELAR */
+
+.order-actions button:nth-child(5) {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+
+/* =========================================
+   MENSAGEM SEM PEDIDOS
+========================================= */
+
+.empty-products {
+    padding: 30px;
+    text-align: center;
+    border-radius: 14px;
+    background: #f9fafb;
+    color: #6b7280;
+}
+
+
+/* =========================================
+   RESPONSIVO
+========================================= */
+
+@media (max-width: 768px) {
+
+    .orders-section {
+        padding: 16px;
+    }
+
+
+    .orders-list {
+        grid-template-columns: 1fr;
+    }
+
+
+    .order-card {
+        padding: 16px;
+    }
+
+
+    .order-card-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+
+    .orders-filters {
+        gap: 8px;
+    }
+
+
+    .order-filter {
+        flex: 1 1 auto;
+        text-align: center;
+    }
+
+
+    .order-actions {
+        flex-direction: column;
+    }
+
+
+    .order-actions button {
+        width: 100%;
+    }
+
+}
+
+/* =========================================
+   BADGES DOS CONTADORES DE PEDIDOS
+========================================= */
+
+.order-filter span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-width: 22px;
+    height: 22px;
+
+    margin-left: 6px;
+    padding: 0 6px;
+
+    border-radius: 999px;
+
+    background: #ffffff;
+    color: #111827;
+
+    font-size: 12px;
+    font-weight: 700;
+
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+
+/* Badge do filtro selecionado */
+
+.order-filter.active span {
+    background: #ffffff;
+    color: #111827;
+}
+
+/* =========================================
+   TOAST - NOVO PEDIDO
+========================================= */
+
+.order-toast {
+    position: fixed;
+    top: 25px;
+    right: 25px;
+
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    min-width: 300px;
+    max-width: 380px;
+
+    padding: 16px 20px;
+
+    background: #ffffff;
+    border-left: 5px solid #22c55e;
+    border-radius: 12px;
+
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.20);
+
+    z-index: 9999;
+
+    opacity: 0;
+    visibility: hidden;
+
+    transform: translateX(120%);
+
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease,
+        visibility 0.3s;
+}
+
+.order-toast.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(0);
+}
+
+.order-toast-icon {
+    font-size: 30px;
+}
+
+.order-toast-content {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.order-toast-content strong {
+    font-size: 16px;
+    color: #111827;
+}
+
+.order-toast-content span {
+    font-size: 14px;
+    color: #6b7280;
+}
+
+/* =========================================
+   DESTAQUE VISUAL - PEDIDO NOVO
+========================================= */
+
+.order-card-new {
+    border: 3px solid #22c55e !important;
+
+    background: #ecfdf5 !important;
+
+    box-shadow:
+        0 0 0 5px rgba(34, 197, 94, 0.20),
+        0 15px 35px rgba(34, 197, 94, 0.35) !important;
+
+    animation: novoPedidoPulse 0.8s ease-in-out infinite;
+}
+
+
+@keyframes novoPedidoPulse {
+
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.025);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+
+}
+
+/* =========================================
+   DASHBOARD DE PEDIDOS DO DIA
+========================================= */
+
+.orders-dashboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,
+            minmax(180px, 1fr));
+    gap: 16px;
+
+    margin: 22px 0 26px;
+}
+
+.order-metric {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+
+    padding: 18px;
+
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.order-metric>span {
+    font-size: 30px;
+}
+
+.order-metric strong {
+    display: block;
+
+    font-size: 22px;
+    color: #111827;
+}
+
+.order-metric p {
+    margin: 3px 0 0;
+
+    font-size: 13px;
+    color: #6b7280;
+}
+
+@media (max-width: 768px) {
+
+    .orders-dashboard {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 480px) {
+
+    .orders-dashboard {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+/* =========================================
+   TEMPO DO PEDIDO
+========================================= */
+
+.order-time {
+    display: block;
+    margin-top: 5px;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    color: #6b7280;
+}
+
+
+/* =========================================
+   ALERTA DE ATRASO
+========================================= */
+
+.order-delay-alert {
+    display: inline-block;
+
+    margin-top: 8px;
+    padding: 6px 10px;
+
+    border-radius: 999px;
+
+    background: #fef3c7;
+    color: #92400e;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+
+.order-card-late {
+    border: 2px solid #f59e0b !important;
+
+    box-shadow:
+        0 0 0 4px rgba(245, 158, 11, 0.12),
+        0 8px 22px rgba(245, 158, 11, 0.18);
+}
+
+/* =========================================
+   STATUS FINAL DO PEDIDO
+========================================= */
+
+.order-final-status {
+    padding: 12px 16px;
+    border-radius: 10px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.order-final-status.completed {
+    background: #dcfce7;
+    color: #166534;
+    border: 1px solid #86efac;
+}
+
+.order-final-status.canceled {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}

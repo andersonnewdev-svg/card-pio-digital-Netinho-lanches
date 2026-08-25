@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Teste Supabase
+    </title>
+
+</head>
+
+
+<body>
+
+    <h1>
+        Teste do Nettinho Lanches
+    </h1>
+
+    <div id="resultado">
+
+        Carregando produtos...
+
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://lurvjoixifgcryybrkms.supabase.co";
+
+
+        const SUPABASE_KEY =
+            "sb_publishable_0_ok9T_H8Zd2M1wpwM88jQ_wYNkPJZE";
+
+        const supabaseClient =
+            window.supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        async function carregarProdutos() {
+
+            const resultado =
+                document.getElementById(
+                    "resultado"
+                );
+
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+
+                    .from("products")
+
+                    .select("*")
+
+                    .eq(
+                        "available",
+                        true
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    error
+                );
+
+
+                resultado.innerHTML = `
+
+                    <p>
+                        ❌ Erro ao carregar produtos
+                    </p>
+
+                    <pre>
+                        ${error.message}
+                    </pre>
+
+                `;
+
+                return;
+
+            }
+
+
+            if (
+                data.length === 0
+            ) {
+
+                resultado.innerHTML = `
+
+                    <p>
+                        Nenhum produto encontrado.
+                    </p>
+
+                `;
+
+                return;
+
+            }
+
+
+            resultado.innerHTML = "";
+
+
+            data.forEach(
+                produto => {
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+
+                    card.innerHTML = `
+
+                        <hr>
+
+                        <h2>
+                            ${produto.name}
+                        </h2>
+
+                        <p>
+                            ${produto.description}
+                        </p>
+
+                        <strong>
+                            R$ ${Number(
+                        produto.price
+                    ).toFixed(2)}
+                        </strong>
+
+                        <br><br>
+
+                        <img
+                            src="${produto.image_url}"
+                            alt="${produto.name}"
+                            width="300"
+                        >
+
+                    `;
+
+
+                    resultado.appendChild(
+                        card
+                    );
+
+                }
+            );
+
+        }
+
+
+        carregarProdutos();
+
+    </script>
+
+
+</body>
+
+</html>
