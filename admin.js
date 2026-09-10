@@ -42,6 +42,9 @@ const copyStoreLinkButton =
 const storePublicLink =
     document.getElementById("storePublicLink");
 
+const exportBackupButton =
+    document.getElementById("exportBackupButton");
+
 
 /* =========================================================
    ELEMENTOS - CONFIGURAÇÕES DA LOJA
@@ -3007,7 +3010,131 @@ function mostrarToastNovoPedido(
 /* =========================================================
    CARREGAR PRODUTOS
 ========================================================= */
+async function exportarBackupLoja() {
 
+    if (!currentStoreSettingsId) {
+        alert("❌ Loja não identificada.");
+        return;
+    }
+
+    try {
+
+        const [
+            configuracoesResult,
+            categoriasResult,
+            produtosResult
+        ] = await Promise.all([
+
+            supabaseClient
+                .from("store_settings")
+                .select("*")
+                .eq("id", currentStoreSettingsId)
+                .single(),
+
+            supabaseClient
+                .from("categories")
+                .select("*")
+                .eq("store_id", currentStoreSettingsId),
+
+            supabaseClient
+                .from("products")
+                .select("*")
+                .eq("store_id", currentStoreSettingsId)
+        ]);
+
+        if (configuracoesResult.error) {
+            throw configuracoesResult.error;
+        }
+
+        if (categoriasResult.error) {
+            throw categoriasResult.error;
+        }
+
+        if (produtosResult.error) {
+            throw produtosResult.error;
+        }
+
+        const backup = {
+            version: "4.0",
+            exported_at:
+                new Date().toISOString(),
+
+            store:
+                configuracoesResult.data,
+
+            categories:
+                categoriasResult.data || [],
+
+            products:
+                produtosResult.data || []
+        };
+
+        const json =
+            JSON.stringify(
+                backup,
+                null,
+                2
+            );
+
+        const blob =
+            new Blob(
+                [json],
+                {
+                    type: "application/json"
+                }
+            );
+
+        const url =
+            URL.createObjectURL(blob);
+
+        const link =
+            document.createElement("a");
+
+        const slug =
+            configuracoesResult.data?.slug ||
+            "loja";
+
+        const date =
+            new Date()
+                .toISOString()
+                .slice(0, 10);
+
+        link.href = url;
+
+        link.download =
+            `backup-${slug}-${date}.json`;
+
+        document.body.appendChild(link);
+
+        link.click();
+
+        link.remove();
+
+        URL.revokeObjectURL(url);
+
+        alert(
+            "✅ Backup exportado com sucesso!"
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao exportar backup:",
+            error
+        );
+
+        alert(
+            "❌ Não foi possível exportar o backup.\n\n" +
+            error.message
+        );
+    }
+}
+
+
+exportBackupButton?.addEventListener(
+    "click",
+    exportarBackupLoja
+);
 async function carregarProdutos() {
 
     if (!verificarSupabase()) {
