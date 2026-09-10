@@ -1,5 +1,5 @@
 /* =========================================================
-   NETTINHO LANCHES
+  CARDÁPIO DIGITAL
    V4.0 FINAL - PAINEL ADMINISTRATIVO
    SUPABASE + AUTH + PRODUTOS + PEDIDOS + REALTIME
 ========================================================= */
@@ -18,11 +18,29 @@ const adminPanel =
 const loginForm =
     document.getElementById("loginForm");
 
+const createAccountBtn =
+    document.getElementById("createAccountBtn");
+
+const registerForm =
+    document.getElementById("registerForm");
+
+const backToLoginBtn =
+    document.getElementById("backToLoginBtn");
+
 const loginError =
     document.getElementById("loginError");
 
 const logoutButton =
     document.getElementById("logoutButton");
+
+const openStoreButton =
+    document.getElementById("openStoreButton");
+
+const copyStoreLinkButton =
+    document.getElementById("copyStoreLinkButton");
+
+const storePublicLink =
+    document.getElementById("storePublicLink");
 
 
 /* =========================================================
@@ -37,6 +55,21 @@ const storeSettingsId =
 
 const storeName =
     document.getElementById("storeName");
+
+const storeSlogan =
+    document.getElementById("storeSlogan");
+
+const storeLogoUrl =
+    document.getElementById("storeLogoUrl");
+
+const storeSinceYear =
+    document.getElementById("storeSinceYear");
+
+const storeSecondaryPhone =
+    document.getElementById("storeSecondaryPhone");
+
+const storeThankYouMessage =
+    document.getElementById("storeThankYouMessage");
 
 const storeWhatsapp =
     document.getElementById("storeWhatsapp");
@@ -62,6 +95,316 @@ const storeOpen =
 
 let currentStoreSettingsId = null;
 
+const categoryForm =
+    document.getElementById(
+        "categoryForm"
+    );
+
+const categoryId =
+    document.getElementById(
+        "categoryId"
+    );
+
+const categoryName =
+    document.getElementById(
+        "categoryName"
+    );
+
+const categoryIcon =
+    document.getElementById(
+        "categoryIcon"
+    );
+
+const categoryActive =
+    document.getElementById(
+        "categoryActive"
+    );
+
+const categoriesList =
+    document.getElementById(
+        "categoriesList"
+    );
+
+let adminCategoriesData = [];
+
+async function carregarCategorias() {
+
+    if (!currentStoreSettingsId) {
+        return;
+    }
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("categories")
+            .select("*")
+            .eq(
+                "store_id",
+                currentStoreSettingsId
+            )
+            .order(
+                "name",
+                {
+                    ascending: true
+                }
+            );
+
+    if (error) {
+
+        console.error(
+            "Erro ao carregar categorias:",
+            error
+        );
+
+        return;
+    }
+
+    adminCategoriesData =
+        data || [];
+
+    if (!categoriesList) {
+        return;
+    }
+
+    categoriesList.innerHTML = "";
+
+    adminCategoriesData.forEach(category => {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "category-admin-item";
+
+        item.innerHTML = `
+    <strong>${category.name}</strong>
+
+    <span>
+        ${category.active ? "Ativa" : "Inativa"}
+    </span>
+
+    <button
+        type="button"
+        class="category-status-button"
+    >
+        ${category.active ? "Inativar" : "Ativar"}
+    </button>
+
+    <button
+        type="button"
+        class="category-edit-button"
+    >
+        Editar
+    </button>
+
+    <button
+        type="button"
+        class="category-delete-button"
+    >
+        Excluir
+    </button>
+`;
+
+        const statusButton =
+            item.querySelector(
+                ".category-status-button"
+            );
+
+        statusButton?.addEventListener(
+            "click",
+            async () => {
+
+                const novoStatus =
+                    !category.active;
+
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("categories")
+                        .update({
+                            active: novoStatus
+                        })
+                        .eq(
+                            "id",
+                            category.id
+                        )
+                        .eq(
+                            "store_id",
+                            currentStoreSettingsId
+                        );
+
+                if (error) {
+
+                    console.error(
+                        "Erro ao alterar categoria:",
+                        error
+                    );
+
+                    alert(
+                        "Erro ao alterar categoria."
+                    );
+
+                    return;
+                }
+
+                await carregarCategorias();
+                await carregarCategoriasNoSelect();
+            }
+        );
+
+        const editButton =
+            item.querySelector(
+                ".category-edit-button"
+            );
+
+        editButton?.addEventListener(
+            "click",
+            () => {
+
+                categoryId.value =
+                    category.id;
+
+                categoryName.value =
+                    category.name;
+
+                categoryActive.checked =
+                    category.active;
+
+                categoryIcon.value =
+                    category.icon || "";
+
+                categoryName.focus();
+            }
+        );
+
+
+        const deleteButton =
+            item.querySelector(
+                ".category-delete-button"
+            );
+
+        deleteButton?.addEventListener(
+            "click",
+            async () => {
+
+                const confirmar =
+                    confirm(
+                        `Excluir a categoria "${category.name}"?`
+                    );
+
+                if (!confirmar) {
+                    return;
+                }
+
+                const {
+                    error
+                } =
+                    await supabaseClient
+                        .from("categories")
+                        .delete()
+                        .eq(
+                            "id",
+                            category.id
+                        )
+                        .eq(
+                            "store_id",
+                            currentStoreSettingsId
+                        );
+
+                if (error) {
+
+                    console.error(
+                        "Erro ao excluir categoria:",
+                        error
+                    );
+
+                    alert(
+                        "Erro ao excluir categoria."
+                    );
+
+                    return;
+                }
+
+                await carregarCategorias();
+                await carregarCategoriasNoSelect();
+            }
+        );
+
+        categoriesList.appendChild(
+            item
+        );
+    });
+}
+
+async function carregarCategoriasNoSelect() {
+
+    if (
+        !currentStoreSettingsId ||
+        !productCategory
+    ) {
+        return;
+    }
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("categories")
+            .select("id, name, slug, active")
+            .eq(
+                "store_id",
+                currentStoreSettingsId
+            )
+            .eq(
+                "active",
+                true
+            )
+            .order(
+                "name",
+                {
+                    ascending: true
+                }
+            );
+
+    if (error) {
+
+        console.error(
+            "Erro ao carregar categorias no produto:",
+            error
+        );
+
+        return;
+    }
+
+    productCategory.innerHTML = `
+        <option value="">
+            Selecione uma categoria
+        </option>
+    `;
+
+    data.forEach(category => {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            category.slug;
+
+        option.textContent =
+            category.name;
+
+        productCategory.appendChild(
+            option
+        );
+    });
+}
 
 /* =========================================================
    ELEMENTOS - PEDIDOS
@@ -94,6 +437,126 @@ const countConcluido =
 
 const countCancelado =
     document.getElementById("countCancelado");
+
+const adminStoreName =
+    document.getElementById(
+        "adminStoreName"
+    );
+
+/* =========================================================
+SALVAR CATEGORIA
+========================================================= */
+
+categoryForm?.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+        const name =
+            categoryName.value.trim();
+
+        const active =
+            categoryActive.checked;
+
+        if (!name) {
+
+            alert(
+                "Informe o nome da categoria."
+            );
+
+            return;
+        }
+
+        if (!currentStoreSettingsId) {
+
+            alert(
+                "Erro: loja não identificada."
+            );
+
+            return;
+        }
+
+        const slug =
+            name
+                .toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+
+        const icon =
+            categoryIcon?.value.trim() ||
+            "🍽️";
+
+        const categoryData = {
+            name,
+            slug,
+            icon,
+            active,
+            store_id: currentStoreSettingsId
+        };
+
+        let error;
+
+        if (categoryId.value) {
+
+            const response =
+                await supabaseClient
+                    .from("categories")
+                    .update(categoryData)
+                    .eq(
+                        "id",
+                        categoryId.value
+                    )
+                    .eq(
+                        "store_id",
+                        currentStoreSettingsId
+                    );
+
+            error =
+                response.error;
+
+        } else {
+
+            const response =
+                await supabaseClient
+                    .from("categories")
+                    .insert(categoryData);
+
+            error =
+                response.error;
+        }
+        if (error) {
+
+            console.error(
+                "Erro ao salvar categoria:",
+                error
+            );
+
+            alert(
+                "Erro ao salvar categoria."
+            );
+
+            return;
+        }
+
+        alert(
+            "Categoria cadastrada com sucesso!"
+        );
+
+        categoryForm.reset();
+
+        categoryId.value = "";
+
+        categoryActive.checked =
+            true;
+
+        await carregarCategorias();
+
+        await carregarCategoriasNoSelect();
+    }
+);
 
 
 /* =========================================================
@@ -154,6 +617,8 @@ const closeProductModal =
 const productForm =
     document.getElementById("productForm");
 
+
+
 const adminProducts =
     document.getElementById("adminProducts");
 
@@ -199,6 +664,9 @@ const productDescription =
 
 const productImage =
     document.getElementById("productImage");
+
+const productImageFile =
+    document.getElementById("productImageFile");
 
 const productAvailable =
     document.getElementById("productAvailable");
@@ -324,6 +792,120 @@ loginForm?.addEventListener(
     }
 );
 
+createAccountBtn?.addEventListener(
+    "click",
+    () => {
+
+        loginForm?.classList.add("hidden");
+
+        registerForm?.classList.remove("hidden");
+
+        loginError.textContent = "";
+    }
+);
+
+backToLoginBtn?.addEventListener(
+    "click",
+    () => {
+
+        registerForm?.classList.add("hidden");
+
+        loginForm?.classList.remove("hidden");
+
+        loginError.textContent = "";
+    }
+);
+
+registerForm?.addEventListener(
+    "submit",
+    async event => {
+
+        event.preventDefault();
+
+        if (!verificarSupabase()) {
+            return;
+        }
+
+        const email =
+            document
+                .getElementById("registerEmail")
+                ?.value
+                .trim() || "";
+
+        const password =
+            document
+                .getElementById("registerPassword")
+                ?.value || "";
+
+        const passwordConfirm =
+            document
+                .getElementById("registerPasswordConfirm")
+                ?.value || "";
+
+        loginError.textContent = "";
+
+        if (!email) {
+            loginError.textContent =
+                "Informe um e-mail.";
+            return;
+        }
+
+        if (password.length < 6) {
+            loginError.textContent =
+                "A senha deve ter pelo menos 6 caracteres.";
+            return;
+        }
+
+        if (password !== passwordConfirm) {
+            loginError.textContent =
+                "As senhas não coincidem.";
+            return;
+        }
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient.auth
+                .signUp({
+                    email,
+                    password,
+                    options: {
+                        emailRedirectTo:
+                            `${window.location.origin}/admin.html`
+                    }
+                });
+
+        if (error) {
+            console.error(
+                "Erro ao criar conta:",
+                error
+            );
+
+            loginError.textContent =
+                "Não foi possível criar a conta: " +
+                error.message;
+
+            return;
+        }
+
+        if (data.session) {
+            alert("✅ Conta criada com sucesso!");
+
+            await showAdminPanel();
+            return;
+        }
+
+        alert(
+            "✅ Conta criada! Verifique seu e-mail para confirmar o cadastro."
+        );
+
+        registerForm.reset();
+
+        registerForm.classList.add("hidden");
+        loginForm.classList.remove("hidden");
+    }
+);
 
 /* =========================================================
    VERIFICAR SESSÃO
@@ -383,10 +965,13 @@ async function showAdminPanel() {
         "hidden"
     );
 
+    await carregarConfiguracoesLoja();
+
     await Promise.all([
         carregarProdutos(),
-        carregarConfiguracoesLoja(),
-        carregarPedidos()
+        carregarPedidos(),
+        carregarCategorias(),
+        carregarCategoriasNoSelect()
     ]);
 
     iniciarRealtimePedidos();
@@ -445,6 +1030,30 @@ logoutButton?.addEventListener(
 
 async function carregarConfiguracoesLoja() {
 
+    if (!verificarSupabase()) {
+        return false;
+    }
+
+    const {
+        data: userData,
+        error: userError
+    } =
+        await supabaseClient.auth
+            .getUser();
+
+    if (
+        userError ||
+        !userData?.user
+    ) {
+
+        console.error(
+            "Erro ao identificar usuário:",
+            userError
+        );
+
+        return false;
+    }
+
     const {
         data,
         error
@@ -452,8 +1061,12 @@ async function carregarConfiguracoesLoja() {
         await supabaseClient
             .from("store_settings")
             .select("*")
+            .eq(
+                "owner_id",
+                userData.user.id
+            )
             .limit(1)
-            .single();
+            .maybeSingle();
 
     if (error) {
 
@@ -462,15 +1075,81 @@ async function carregarConfiguracoesLoja() {
             error
         );
 
-        return;
+        return false;
     }
 
     if (!data) {
-        return;
+
+        console.warn(
+            "Nenhuma loja encontrada para este usuário."
+        );
+
+        currentStoreSettingsId =
+            null;
+
+        alert(
+            "👋 Bem-vindo!\n\n" +
+            "Configure os dados da sua loja para começar."
+        );
+
+        return false;
     }
 
     currentStoreSettingsId =
         data.id;
+
+    if (storePublicLink) {
+        storePublicLink.value =
+            data.slug
+                ? `${window.location.origin}/index.html?loja=${encodeURIComponent(data.slug)}`
+                : "";
+    }
+
+    if (openStoreButton) {
+        openStoreButton.onclick = () => {
+
+            if (!data.slug) {
+                alert("Esta loja ainda não possui um link.");
+                return;
+            }
+
+            window.open(
+                `index.html?loja=${encodeURIComponent(data.slug)}`,
+                "_blank"
+            );
+        };
+    }
+
+    if (copyStoreLinkButton) {
+        copyStoreLinkButton.onclick = async () => {
+
+            if (!data.slug) {
+                alert("Esta loja ainda não possui um link.");
+                return;
+            }
+
+            const storeLink =
+                `${window.location.origin}/index.html?loja=${encodeURIComponent(data.slug)}`;
+
+            try {
+                await navigator.clipboard.writeText(storeLink);
+
+                alert("✅ Link do cardápio copiado!");
+            } catch (error) {
+                console.error(
+                    "Erro ao copiar link:",
+                    error
+                );
+
+                alert("❌ Não foi possível copiar o link.");
+            }
+        };
+    }
+
+    if (adminStoreName) {
+        adminStoreName.textContent =
+            `🍔 ${data.store_name || "Minha Loja"}`;
+    }
 
     if (storeSettingsId) {
 
@@ -481,8 +1160,40 @@ async function carregarConfiguracoesLoja() {
     storeName.value =
         data.store_name || "";
 
+    storeSlogan.value =
+        data.slogan || "";
+
+    storeLogoUrl.value =
+        data.logo_url || "";
+
+    if (storeLogoPreview) {
+
+        storeLogoPreview.innerHTML =
+            data.logo_url
+                ? `
+                    <img
+                        src="${escapeHTML(data.logo_url)}"
+                        alt="Logo atual da loja"
+                        style="
+                            width: 90px;
+                            height: 90px;
+                            object-fit: contain;
+                            border-radius: 12px;
+                            margin-top: 10px;
+                        "
+                    >
+                `
+                : "";
+    }
+
+    storeSinceYear.value =
+        data.since_year || "";
+
     storeWhatsapp.value =
         data.whatsapp || "";
+
+    storeSecondaryPhone.value =
+        data.secondary_phone || "";
 
     storeAddress.value =
         data.address || "";
@@ -515,8 +1226,12 @@ async function carregarConfiguracoesLoja() {
 
     storeOpen.checked =
         data.is_open === true;
-}
 
+    storeThankYouMessage.value =
+        data.thank_you_message || "";
+
+    return true;
+}
 
 /* =========================================================
    SALVAR CONFIGURAÇÕES
@@ -528,13 +1243,22 @@ storeSettingsForm?.addEventListener(
 
         event.preventDefault();
 
-        const id =
+        let id =
             currentStoreSettingsId;
 
-        if (!id) {
+        const {
+            data: userData,
+            error: userError
+        } =
+            await supabaseClient.auth.getUser();
+
+        if (
+            userError ||
+            !userData?.user
+        ) {
 
             alert(
-                "Configuração da loja não encontrada."
+                "❌ Usuário não autenticado."
             );
 
             return;
@@ -553,12 +1277,46 @@ storeSettingsForm?.addEventListener(
             return;
         }
 
+        let logoUrl =
+            storeLogoUrl?.value || null;
+
+        if (id) {
+
+            try {
+
+                logoUrl =
+                    await uploadLogoLoja();
+
+            } catch (error) {
+
+                alert(
+                    "❌ Não foi possível enviar a logo.\n\n" +
+                    error.message
+                );
+
+                return;
+            }
+        }
+
         const settingsData = {
 
             store_name:
                 storeName.value.trim(),
 
-            whatsapp,
+            slogan:
+                storeSlogan.value.trim(),
+
+            logo_url:
+                logoUrl,
+
+            since_year:
+                storeSinceYear.value.trim() || null,
+
+            whatsapp:
+                storeWhatsapp.value.trim(),
+
+            secondary_phone:
+                storeSecondaryPhone.value.trim() || null,
 
             address:
                 storeAddress.value.trim(),
@@ -577,29 +1335,104 @@ storeSettingsForm?.addEventListener(
                 storeOpen.checked,
 
             opening_time:
-                openingTime.value ||
-                null,
+                openingTime.value || null,
 
             closing_time:
-                closingTime.value ||
-                null,
+                closingTime.value || null,
+
+            thank_you_message:
+                storeThankYouMessage.value.trim() || null,
 
             updated_at:
                 new Date().toISOString()
+
         };
 
-        const {
-            error
-        } =
-            await supabaseClient
-                .from("store_settings")
-                .update(
-                    settingsData
-                )
-                .eq(
-                    "id",
-                    id
-                );
+        let error;
+
+        if (!id) {
+
+            const slugBase =
+                storeName.value
+                    .trim()
+                    .toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/[^a-z0-9]+/g, "-")
+                    .replace(/^-+|-+$/g, "");
+
+            const novoSlug =
+                `${slugBase}-${Date.now()}`;
+
+            const {
+                data: novaLoja,
+                error: insertError
+            } =
+                await supabaseClient
+                    .from("store_settings")
+                    .insert({
+                        ...settingsData,
+                        owner_id:
+                            userData.user.id,
+                        slug:
+                            novoSlug
+                    })
+                    .select("id")
+                    .single();
+
+            error =
+                insertError;
+
+            if (!error) {
+
+                id =
+                    novaLoja.id;
+
+                currentStoreSettingsId =
+                    novaLoja.id;
+
+                try {
+                    logoUrl =
+                        await uploadLogoLoja();
+
+                    const { error: logoUpdateError } =
+                        await supabaseClient
+                            .from("store_settings")
+                            .update({
+                                logo_url: logoUrl
+                            })
+                            .eq("id", novaLoja.id);
+
+                    if (logoUpdateError) {
+                        throw logoUpdateError;
+                    }
+
+                } catch (logoError) {
+                    console.error(
+                        "Erro ao enviar logo da nova loja:",
+                        logoError
+                    );
+                }
+            }
+
+        } else {
+
+            const {
+                error: updateError
+            } =
+                await supabaseClient
+                    .from("store_settings")
+                    .update(
+                        settingsData
+                    )
+                    .eq(
+                        "id",
+                        id
+                    );
+
+            error =
+                updateError;
+        }
 
         if (error) {
 
@@ -624,11 +1457,199 @@ storeSettingsForm?.addEventListener(
     }
 );
 
+const storeLogoFile =
+    document.getElementById("storeLogoFile");
 
+const storeLogoPreview =
+    document.getElementById("storeLogoPreview");
 /* =========================================================
    PEDIDO É DE HOJE
 ========================================================= */
 
+storeLogoFile?.addEventListener(
+    "change",
+    () => {
+
+        const file =
+            storeLogoFile.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        const previewUrl =
+            URL.createObjectURL(file);
+
+        storeLogoPreview.innerHTML = `
+            <img
+                src="${previewUrl}"
+                alt="Prévia da logo"
+                style="
+                    width: 90px;
+                    height: 90px;
+                    object-fit: contain;
+                    border-radius: 12px;
+                    margin-top: 10px;
+                "
+            >
+        `;
+    }
+);
+
+async function uploadLogoLoja() {
+
+    if (
+        !storeLogoFile ||
+        !storeLogoFile.files ||
+        storeLogoFile.files.length === 0
+    ) {
+        return storeLogoUrl?.value || null;
+    }
+
+    const file =
+        storeLogoFile.files[0];
+
+    const extension =
+        file.name
+            .split(".")
+            .pop()
+            .toLowerCase();
+
+    const fileName =
+        `logo.${extension}`;
+
+    const filePath =
+        `${currentStoreSettingsId}/logos/${fileName}`;
+
+    const {
+        error: uploadError
+    } =
+        await supabaseClient
+            .storage
+            .from("product-images")
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl: "3600",
+                    upsert: true
+                }
+            );
+
+    if (uploadError) {
+
+        console.error(
+            "Erro ao enviar logo:",
+            uploadError
+        );
+
+        throw uploadError;
+    }
+
+    const {
+        data
+    } =
+        supabaseClient
+            .storage
+            .from("product-images")
+            .getPublicUrl(
+                filePath
+            );
+
+    const publicUrl =
+        data?.publicUrl
+            ? `${data.publicUrl}?v=${Date.now()}`
+            : null;
+
+    if (storeLogoUrl) {
+        storeLogoUrl.value =
+            publicUrl || "";
+    }
+
+    return publicUrl;
+}
+
+async function uploadImagemProduto() {
+
+    if (!productImageFile?.files?.length) {
+        return productImage?.value?.trim() || null;
+    }
+
+    if (!currentStoreSettingsId) {
+        throw new Error("Loja não identificada.");
+    }
+
+    const file =
+        productImageFile.files[0];
+
+    // Validação do tipo de arquivo
+    if (!file.type.startsWith("image/")) {
+        throw new Error(
+            "Selecione um arquivo de imagem válido."
+        );
+    }
+
+    // Limite máximo: 5 MB
+    const maxSize =
+        5 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+        throw new Error(
+            "A imagem deve ter no máximo 5 MB."
+        );
+    }
+
+    const extension =
+        file.name
+            .split(".")
+            .pop()
+            ?.toLowerCase();
+
+    const formatosPermitidos =
+        ["jpg", "jpeg", "png", "webp"];
+
+    if (
+        !extension ||
+        !formatosPermitidos.includes(extension)
+    ) {
+        throw new Error(
+            "Formato não permitido. Use JPG, JPEG, PNG ou WebP."
+        );
+    }
+
+    const fileName =
+        `${Date.now()}-${Math.random()
+            .toString(36)
+            .slice(2)}.${extension}`;
+
+    const filePath =
+        `${currentStoreSettingsId}/products/${fileName}`;
+
+    const { error: uploadError } =
+        await supabaseClient.storage
+            .from("product-images")
+            .upload(
+                filePath,
+                file,
+                {
+                    cacheControl: "3600",
+                    upsert: false
+                }
+            );
+
+    if (uploadError) {
+        throw uploadError;
+    }
+
+    const {
+        data: publicUrlData
+    } =
+        supabaseClient.storage
+            .from("product-images")
+            .getPublicUrl(filePath);
+
+    return publicUrlData.publicUrl;
+}
 function pedidoEhDeHoje(pedido) {
 
     const hoje =
@@ -661,6 +1682,9 @@ async function carregarPedidos() {
     if (!verificarSupabase()) {
         return;
     }
+    if (!currentStoreSettingsId) {
+        return;
+    }
 
     const {
         data,
@@ -669,13 +1693,16 @@ async function carregarPedidos() {
         await supabaseClient
             .from("orders")
             .select("*")
+            .eq(
+                "store_id",
+                currentStoreSettingsId
+            )
             .order(
                 "created_at",
                 {
                     ascending: false
                 }
             );
-
     if (error) {
 
         console.error(
@@ -1520,12 +2547,15 @@ async function alterarStatusPedido(
         await supabaseClient
             .from("orders")
             .update({
-                status:
-                    novoStatus
+                status: novoStatus
             })
             .eq(
                 "id",
                 id
+            )
+            .eq(
+                "store_id",
+                currentStoreSettingsId
             );
 
     if (error) {
@@ -1589,15 +2619,11 @@ function iniciarRealtimePedidos() {
                 {
                     event: "INSERT",
                     schema: "public",
-                    table: "orders"
+                    table: "orders",
+                    filter: `store_id=eq.${currentStoreSettingsId}`
                 },
 
                 async payload => {
-
-                    console.log(
-                        "🟢 NOVO PEDIDO RECEBIDO:",
-                        payload.new
-                    );
 
                     highlightedOrderId =
                         payload.new.id;
@@ -1633,22 +2659,18 @@ function iniciarRealtimePedidos() {
                 {
                     event: "UPDATE",
                     schema: "public",
-                    table: "orders"
+                    table: "orders",
+                    filter:
+                        `store_id=eq.${currentStoreSettingsId}`
                 },
-
                 async () => {
-
                     await carregarPedidos();
                 }
             )
-
             .subscribe(
                 status => {
 
-                    console.log(
-                        "Status Realtime:",
-                        status
-                    );
+
                 }
             );
 }
@@ -1690,9 +2712,7 @@ function prepararSomPedidos() {
             .catch(() => { });
     }
 
-    console.log(
-        "🔊 Som dos pedidos preparado"
-    );
+
 }
 
 
@@ -1704,9 +2724,7 @@ function tocarSomNovoPedido() {
 
     if (!orderAudioContext) {
 
-        console.log(
-            "⚠️ Áudio ainda não foi liberado."
-        );
+
 
         return;
     }
@@ -1756,9 +2774,7 @@ function tocarSomNovoPedido() {
         0.5
     );
 
-    console.log(
-        "🔊 Beep executado"
-    );
+
 }
 
 
@@ -1788,10 +2804,7 @@ function solicitarPermissaoNotificacoes() {
             .then(
                 permission => {
 
-                    console.log(
-                        "Permissão de notificações:",
-                        permission
-                    );
+
                 }
             );
     }
@@ -1960,7 +2973,14 @@ async function carregarProdutos() {
     if (!verificarSupabase()) {
         return;
     }
+    if (!currentStoreSettingsId) {
 
+        if (adminProducts) {
+            adminProducts.innerHTML = "";
+        }
+
+        return;
+    }
     if (adminProducts) {
 
         adminProducts.innerHTML = `
@@ -1970,6 +2990,7 @@ async function carregarProdutos() {
         `;
     }
 
+
     const {
         data,
         error
@@ -1977,6 +2998,10 @@ async function carregarProdutos() {
         await supabaseClient
             .from("products")
             .select("*")
+            .eq(
+                "store_id",
+                currentStoreSettingsId
+            )
             .order(
                 "created_at",
                 {
@@ -2076,35 +3101,15 @@ function getCategoryName(
     category
 ) {
 
-    const categories = {
-
-        burgers:
-            "Burguer's",
-
-        combos:
-            "Combos",
-
-        especiais:
-            "Especiais",
-
-        hotdogs:
-            "Hot-Dog's",
-
-        pasteis:
-            "Pastéis",
-
-        massas:
-            "Massas",
-
-        bebidas:
-            "Bebidas",
-
-        adicionais:
-            "Adicionais"
-    };
+    const foundCategory =
+        adminCategoriesData.find(
+            item =>
+                item.slug ===
+                category
+        );
 
     return (
-        categories[category] ||
+        foundCategory?.name ||
         category ||
         "Sem categoria"
     );
@@ -2425,10 +3430,38 @@ productForm?.addEventListener(
             productDescription.value
                 .trim();
 
-        const image_url =
-            productImage.value
-                .trim();
+        let imagemAntigaUrl = null;
 
+        if (productId?.value) {
+            const produtoAtual =
+                adminProductsData.find(
+                    product =>
+                        String(product.id) ===
+                        String(productId.value)
+                );
+
+            imagemAntigaUrl =
+                produtoAtual?.image_url || null;
+        }
+
+        let image_url;
+
+        try {
+            image_url =
+                await uploadImagemProduto();
+        } catch (error) {
+            console.error(
+                "Erro ao enviar imagem do produto:",
+                error
+            );
+
+            alert(
+                "❌ Não foi possível enviar a imagem do produto.\n\n" +
+                error.message
+            );
+
+            return;
+        }
         const available =
             productAvailable.checked;
 
@@ -2454,13 +3487,13 @@ productForm?.addEventListener(
         }
 
         const productData = {
-
             name,
             category,
             price,
             description,
             image_url,
-            available
+            available,
+            store_id: currentStoreSettingsId
         };
 
         const id =
@@ -2474,12 +3507,14 @@ productForm?.addEventListener(
             const result =
                 await supabaseClient
                     .from("products")
-                    .update(
-                        productData
-                    )
+                    .update(productData)
                     .eq(
                         "id",
                         id
+                    )
+                    .eq(
+                        "store_id",
+                        currentStoreSettingsId
                     );
 
             error =
@@ -2511,6 +3546,47 @@ productForm?.addEventListener(
             );
 
             return;
+        }
+
+        if (
+            id &&
+            productImageFile?.files?.length &&
+            imagemAntigaUrl &&
+            imagemAntigaUrl !== image_url &&
+            imagemAntigaUrl.includes(
+                "/storage/v1/object/public/product-images/"
+            )
+        ) {
+            try {
+                const storagePath =
+                    imagemAntigaUrl
+                        .split(
+                            "/storage/v1/object/public/product-images/"
+                        )[1]
+                        ?.split("?")[0];
+
+                if (storagePath) {
+                    const { error: storageError } =
+                        await supabaseClient.storage
+                            .from("product-images")
+                            .remove([
+                                decodeURIComponent(storagePath)
+                            ]);
+
+                    if (storageError) {
+                        console.error(
+                            "Erro ao excluir imagem antiga:",
+                            storageError
+                        );
+                    }
+                }
+
+            } catch (storageError) {
+                console.error(
+                    "Erro ao processar imagem antiga:",
+                    storageError
+                );
+            }
         }
 
         fecharModalProduto();
@@ -2550,6 +3626,10 @@ async function editarProduto(
                 "id",
                 id
             )
+            .eq(
+                "store_id",
+                currentStoreSettingsId
+            )
             .single();
 
     if (error) {
@@ -2574,8 +3654,7 @@ async function editarProduto(
         data.name || "";
 
     productCategory.value =
-        data.category ||
-        "burgers";
+        data.category || "";
 
     productPrice.value =
         data.price || "";
@@ -2616,12 +3695,15 @@ async function alternarProduto(
         await supabaseClient
             .from("products")
             .update({
-                available:
-                    novoStatus
+                available: novoStatus
             })
             .eq(
                 "id",
                 id
+            )
+            .eq(
+                "store_id",
+                currentStoreSettingsId
             );
 
     if (error) {
@@ -2661,6 +3743,33 @@ async function excluirProduto(
     }
 
     const {
+        data: produto,
+        error: produtoError
+    } =
+        await supabaseClient
+            .from("products")
+            .select("image_url")
+            .eq("id", id)
+            .eq(
+                "store_id",
+                currentStoreSettingsId
+            )
+            .maybeSingle();
+
+    if (produtoError) {
+        console.error(
+            "Erro ao buscar imagem do produto:",
+            produtoError
+        );
+
+        alert(
+            "❌ Não foi possível localizar o produto."
+        );
+
+        return;
+    }
+
+    const {
         error
     } =
         await supabaseClient
@@ -2669,6 +3778,10 @@ async function excluirProduto(
             .eq(
                 "id",
                 id
+            )
+            .eq(
+                "store_id",
+                currentStoreSettingsId
             );
 
     if (error) {
@@ -2684,6 +3797,44 @@ async function excluirProduto(
         );
 
         return;
+    }
+
+    if (
+        produto?.image_url &&
+        produto.image_url.includes(
+            "/storage/v1/object/public/product-images/"
+        )
+    ) {
+        try {
+            const storagePath =
+                produto.image_url
+                    .split(
+                        "/storage/v1/object/public/product-images/"
+                    )[1]
+                    ?.split("?")[0];
+
+            if (storagePath) {
+                const { error: storageError } =
+                    await supabaseClient.storage
+                        .from("product-images")
+                        .remove([
+                            decodeURIComponent(storagePath)
+                        ]);
+
+                if (storageError) {
+                    console.error(
+                        "Erro ao excluir imagem do Storage:",
+                        storageError
+                    );
+                }
+            }
+
+        } catch (storageError) {
+            console.error(
+                "Erro ao processar exclusão da imagem:",
+                storageError
+            );
+        }
     }
 
     alert(
@@ -2757,13 +3908,7 @@ adminSearch?.addEventListener(
 
 async function iniciarAdmin() {
 
-    console.log(
-        "🍔 Nettinho Lanches - Admin V4.0"
-    );
 
-    console.log(
-        "☁️ Banco: Supabase"
-    );
 
     await checkLogin();
 }

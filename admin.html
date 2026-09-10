@@ -7,11 +7,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="Painel Administrativo - Nettinho Lanches">
-
-    <title>
-        Admin | Nettinho Lanches
-    </title>
+    <meta name="description" content="Painel Administrativo | Cardápio Digital">
+    <title>Painel Administrativo | Cardápio Digital</title>
 
     <link rel="stylesheet" href="admin.css">
 
@@ -34,7 +31,7 @@
             </div>
 
             <h1>
-                Nettinho Lanches
+                Cardápio Digital
             </h1>
 
             <p>
@@ -52,8 +49,29 @@
                     Entrar
                 </button>
 
-            </form>
+                <button type="button" id="createAccountBtn">
+                    Criar conta
+                </button>
 
+            </form>
+            <form id="registerForm" class="hidden">
+
+                <input type="email" id="registerEmail" placeholder="Seu e-mail" autocomplete="email">
+
+                <input type="password" id="registerPassword" placeholder="Crie uma senha" autocomplete="new-password">
+
+                <input type="password" id="registerPasswordConfirm" placeholder="Confirme a senha"
+                    autocomplete="new-password">
+
+                <button type="submit">
+                    Criar minha conta
+                </button>
+
+                <button type="button" id="backToLoginBtn">
+                    Voltar para o login
+                </button>
+
+            </form>
 
             <p id="loginError" class="login-error"></p>
 
@@ -78,10 +96,9 @@
 
             <div>
 
-                <h1>
-                    🍔 Nettinho Lanches
+                <h1 id="adminStoreName">
+                    🍔 Minha Loja
                 </h1>
-
                 <span>
                     Painel Administrativo
                 </span>
@@ -126,73 +143,139 @@
 
                 </div>
 
+                <form id="storeSettingsForm">
 
-                <form id="storeSettingsForm" class="store-settings-form">
+                    <div class="settings-grid">
 
-                    <input type="hidden" id="storeSettingsId">
+                        <div class="form-group">
+                            <label for="storeName">Nome da loja</label>
+                            <input type="text" id="storeName" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="storeSlogan">Slogan</label>
+                            <input type="text" id="storeSlogan" placeholder="Ex.: Hambúrguer Artesanal">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="storeSinceYear">Desde</label>
+                            <input type="text" id="storeSinceYear" placeholder="Ex.: 2021">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="storeWhatsapp">WhatsApp dos pedidos</label>
+                            <input type="text" id="storeWhatsapp" placeholder="Ex.: 5588999999999" inputmode="numeric">
+                        </div>
+
+                    </div>
+
+                    <div class="settings-grid">
+
+                        <div class="form-group">
+                            <label for="storeSecondaryPhone">
+                                Telefone secundário
+                            </label>
+                            <input type="text" id="storeSecondaryPhone">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="storeAddress">
+                                Endereço
+                            </label>
+                            <input type="text" id="storeAddress">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="deliveryFee">
+                                Taxa de entrega
+                            </label>
+                            <input type="number" id="deliveryFee" min="0" step="0.01">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="minimumOrder">
+                                Pedido mínimo
+                            </label>
+                            <input type="number" id="minimumOrder" min="0" step="0.01">
+                        </div>
+
+                    </div>
+
+                    <div class="logo-upload-group">
+
+                        <div class="form-group">
+                            <label for="storeLogoFile">
+                                Logo da loja
+                            </label>
+
+                            <input type="file" id="storeLogoFile" accept="image/*">
+
+                            <input type="hidden" id="storeLogoUrl">
+                        </div>
+
+                        <div id="storeLogoPreview" class="store-logo-preview">
+                        </div>
+
+                    </div>
 
 
-                    <label for="storeName">
-                        Nome da loja
-                    </label>
+                    <div class="settings-grid">
 
-                    <input type="text" id="storeName" required>
+                        <div class="form-group">
+                            <label for="openingTime">
+                                Horário de abertura
+                            </label>
 
+                            <input type="time" id="openingTime">
+                        </div>
 
-                    <label for="storeWhatsapp">
-                        WhatsApp dos pedidos
-                    </label>
+                        <div class="form-group">
+                            <label for="closingTime">
+                                Horário de fechamento
+                            </label>
 
-                    <input type="text" id="storeWhatsapp" placeholder="5588999999999" inputmode="numeric" required>
+                            <input type="time" id="closingTime">
+                        </div>
 
+                    </div>
 
-                    <label for="storeAddress">
-                        Endereço
-                    </label>
+                    <div class="form-group store-open-group">
+                        <label class="available-check" for="storeOpen">
+                            <input type="checkbox" id="storeOpen">
+                            Loja aberta
+                        </label>
+                    </div>
 
-                    <input type="text" id="storeAddress">
+                    <div class="form-group">
+                        <label for="storeThankYouMessage">
+                            Mensagem de agradecimento
+                        </label>
 
+                        <textarea id="storeThankYouMessage" rows="3"
+                            placeholder="Ex.: Obrigado pela preferência!"></textarea>
+                    </div>
 
-                    <label for="deliveryFee">
-                        Taxa de entrega
-                    </label>
+                    <div class="settings-field">
+                        <label for="storePublicLink">
+                            Link público do cardápio
+                        </label>
 
-                    <input type="number" id="deliveryFee" min="0" step="0.01">
+                        <input type="text" id="storePublicLink" readonly placeholder="O link da loja aparecerá aqui">
+                    </div>
 
+                    <div class="settings-actions">
+                        <button type="submit" class="save-button">
+                            💾 Salvar Configurações
+                        </button>
 
-                    <label for="minimumOrder">
-                        Pedido mínimo
-                    </label>
+                        <button type="button" id="openStoreButton" class="save-button">
+                            🌐 Abrir meu cardápio
+                        </button>
 
-                    <input type="number" id="minimumOrder" min="0" step="0.01">
-
-
-                    <label for="openingTime">
-                        Horário de abertura
-                    </label>
-
-                    <input type="time" id="openingTime">
-
-
-                    <label for="closingTime">
-                        Horário de fechamento
-                    </label>
-
-                    <input type="time" id="closingTime">
-
-
-                    <label class="available-check" for="storeOpen">
-
-                        <input type="checkbox" id="storeOpen">
-
-                        Loja aberta
-
-                    </label>
-
-
-                    <button type="submit" class="save-button">
-                        💾 Salvar Configurações
-                    </button>
+                        <button type="button" id="copyStoreLinkButton" class="save-button">
+                            📋 Copiar link do cardápio
+                        </button>
+                    </div>
 
                 </form>
 
@@ -535,6 +618,54 @@
 
             </section>
 
+            <section class="admin-section" id="categoriesSection">
+
+                <div class="admin-section-header">
+                    <div>
+                        <h2>Categorias</h2>
+                        <p>Gerencie as categorias do cardápio.</p>
+                    </div>
+                </div>
+
+                <form id="categoryForm" class="admin-form">
+
+                    <input type="hidden" id="categoryId">
+
+                    <div class="form-group">
+                        <label for="categoryName">
+                            Nome da categoria
+                        </label>
+
+                        <input type="text" id="categoryName" placeholder="Ex: Burgueres" required>
+                    </div>
+
+                    <div class="form-group">
+
+                        <label for="categoryIcon">
+                            Ícone
+                        </label>
+
+                        <input type="text" id="categoryIcon" maxlength="4" placeholder="Ex: 🍕">
+
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="categoryActive" checked>
+                            Categoria ativa
+                        </label>
+                    </div>
+
+                    <button type="submit" class="primary-button">
+                        Salvar categoria
+                    </button>
+
+                </form>
+
+                <div id="categoriesList" class="categories-list"></div>
+
+            </section>
+
 
 
             <!-- =====================================
@@ -634,41 +765,10 @@
                 </label>
 
                 <select id="productCategory" required>
-
-                    <option value="burgers">
-                        Burguer's
+                    <option value="">
+                        Selecione uma categoria
                     </option>
-
-                    <option value="combos">
-                        Combos
-                    </option>
-
-                    <option value="especiais">
-                        Especiais
-                    </option>
-
-                    <option value="hotdogs">
-                        Hot-Dog's
-                    </option>
-
-                    <option value="pasteis">
-                        Pastéis
-                    </option>
-
-                    <option value="massas">
-                        Massas
-                    </option>
-
-                    <option value="bebidas">
-                        Bebidas
-                    </option>
-
-                    <option value="adicionais">
-                        Adicionais
-                    </option>
-
                 </select>
-
 
                 <label for="productPrice">
                     Preço
@@ -689,6 +789,12 @@
                 </label>
 
                 <input type="url" id="productImage" placeholder="https://...">
+
+                <label for="productImageFile">
+                    Ou escolher imagem do computador
+                </label>
+
+                <input type="file" id="productImageFile" accept="image/*">
 
 
                 <label class="available-check" for="productAvailable">

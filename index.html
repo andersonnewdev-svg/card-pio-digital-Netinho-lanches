@@ -7,11 +7,10 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta name="description" content="Nettinho Lanches - Hambúrguer Artesanal">
+    <meta name="description" content="Cardápio digital para pedidos online">
+    <title>Cardápio Digital</title>
 
-    <title>
-        Nettinho Lanches
-    </title>
+
 
     <!-- CSS -->
     <link rel="stylesheet" href="style.css">
@@ -35,44 +34,46 @@
 
             <div class="logo">
 
-                <div class="logo-icon">
+                <div class="logo-icon" id="storeLogoContainer">
                     🍔
                 </div>
 
                 <div class="logo-text">
 
-                    <h1>
-                        NETTINHO
+                    <h1 id="storeDisplayName">
+
                     </h1>
 
-                    <span>
-                        HAMBURGUER ARTESANAL
+                    <span id="storeDisplaySlogan">
+
                     </span>
 
-                    <small>
-                        DESDE 2021
+                    <small id="storeDisplaySince">
+
                     </small>
 
                 </div>
 
-                <strong class="logo-lanches">
-                    Lanches
-                </strong>
             </div>
 
-            <!-- WHATSAPP -->
+            <strong class="logo-lanches">
 
-            <div class="contato-header">
+            </strong>
+        </div>
 
-                <span>
-                    FAÇA SEU PEDIDO
-                </span>
+        <!-- WHATSAPP -->
 
-                <strong>
-                    🟢 (88) 9 9713-1293
-                </strong>
+        <div class="contato-header">
 
-            </div>
+            <span>
+
+            </span>
+
+            <strong id="storeDisplayWhatsapp">
+
+            </strong>
+
+        </div>
 
 
         </div>
@@ -85,106 +86,7 @@
      MENU DE CATEGORIAS
 ========================================= -->
 
-    <nav class="categorias">
-
-        <button class="categoria ativa" onclick="filtrarCategoria('todos')">
-
-            <span>🍔</span>
-
-            <small>
-                TODOS
-            </small>
-
-        </button>
-
-
-        <button class="categoria" onclick="filtrarCategoria('burgueres')">
-
-            <span>🍔</span>
-
-            <small>
-                BURGUER'S
-            </small>
-
-        </button>
-
-
-        <button class="categoria" onclick="filtrarCategoria('combos')">
-
-            <span>🍟</span>
-
-            <small>
-                COMBOS
-            </small>
-
-        </button>
-
-
-        <button class="categoria" onclick="filtrarCategoria('especiais')">
-
-            <span>⭐</span>
-
-            <small>
-                ESPECIAIS
-            </small>
-
-        </button>
-
-
-        <button class="categoria" onclick="filtrarCategoria('hotdogs')">
-
-            <span>🌭</span>
-
-            <small>
-                HOT-DOG'S
-            </small>
-
-        </button>
-
-
-        <button class="categoria" onclick="filtrarCategoria('pastel')">
-
-            <span>🥟</span>
-
-            <small>
-                PASTEL
-            </small>
-
-        </button>
-
-
-        <button class="categoria" onclick="filtrarCategoria('massas')">
-
-            <span>🍝</span>
-
-            <small>
-                MASSAS
-            </small>
-
-        </button>
-
-
-        <button class="categoria" onclick="filtrarCategoria('bebidas')">
-
-            <span>🥤</span>
-
-            <small>
-                BEBIDAS
-            </small>
-
-        </button>
-
-
-        <button class="categoria" onclick="filtrarCategoria('adicionais')">
-
-            <span>➕</span>
-
-            <small>
-                ADICIONAIS
-            </small>
-
-        </button>
-
+    <nav class="categorias" id="categoriesMenu">
     </nav>
 
 
@@ -199,6 +101,9 @@
         <!-- =====================================
          ÁREA PRINCIPAL
     ====================================== -->
+        <strong id="storeDisplayWhatsapp">
+
+        </strong>
 
         <section class="conteudo">
 
@@ -401,7 +306,7 @@
                     Telefone / WhatsApp
                 </label>
 
-                <input type="tel" id="telefone-cliente" placeholder="Ex.: (88) 9 9713-1293">
+                <input type="tel" id="telefone-cliente" placeholder="Ex.: (00) 00000-0000">
 
 
                 <!-- TIPO DO PEDIDO -->

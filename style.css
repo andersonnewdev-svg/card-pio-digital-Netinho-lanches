@@ -1,5 +1,5 @@
 /* =====================================================
-   NETTINHO LANCHES - CARDÁPIO DIGITAL V2.0
+    CARDÁPIO DIGITAL V2.0
    ===================================================== */
 
 
@@ -176,6 +176,13 @@ img {
     font-size:
         40px;
 
+}
+
+.store-logo-image {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    border-radius: 12px;
 }
 
 
@@ -432,13 +439,23 @@ img {
         grid;
 
     grid-template-columns:
-        minmax(0, 1fr) 380px;
+        minmax(0, 1fr) minmax(300px, 340px);
 
     gap:
         30px;
 
     align-items:
         start;
+
+    .conteudo {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .sidebar {
+        grid-column: 2;
+        grid-row: 1;
+    }
 
 }
 
@@ -611,8 +628,8 @@ img {
         grid;
 
     grid-template-columns:
-        repeat(3, 1fr);
-
+        repeat(auto-fit,
+            minmax(230px, 1fr));
     gap:
         20px;
 
@@ -1887,6 +1904,7 @@ img {
     }
 
 
+
     .produtos-grid {
 
         grid-template-columns:
@@ -1909,7 +1927,7 @@ img {
    RESPONSIVIDADE CELULAR
    ===================================================== */
 
-@media (max-width: 800px) {
+@media (max-width: 1000px) {
 
     /* =========================================
        HEADER

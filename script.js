@@ -1,5 +1,5 @@
 /* =========================================================
-   NETTINHO LANCHES
+   CARDÁPIO DIGITAL
    V4.0 FINAL - CARDÁPIO DO CLIENTE
    SUPABASE + CARRINHO + WHATSAPP
 ========================================================= */
@@ -43,41 +43,135 @@ let orderSubmitting =
    MAPA DE CATEGORIAS
 ========================================================= */
 
-const categoryMap = {
+let categories = [];
 
-    todos:
-        null,
+async function carregarCategorias() {
 
-    burgueres:
-        "burgers",
+    if (!storeSettings?.id) {
+        return;
+    }
 
-    burgers:
-        "burgers",
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("categories")
+            .select("id, name, slug, icon")
+            .eq(
+                "store_id",
+                storeSettings.id
+            )
+            .eq(
+                "active",
+                true
+            )
+            .order(
+                "name",
+                {
+                    ascending: true
+                }
+            );
 
-    combos:
-        "combos",
+    if (error) {
 
-    especiais:
-        "especiais",
+        console.error(
+            "Erro ao carregar categorias:",
+            error
+        );
 
-    hotdogs:
-        "hotdogs",
+        categories = [];
 
-    pastel:
-        "pasteis",
+        return;
+    }
 
-    pasteis:
-        "pasteis",
+    categories = data || [];
 
-    massas:
-        "massas",
 
-    bebidas:
-        "bebidas",
+}
 
-    adicionais:
-        "adicionais"
-};
+function renderizarCategorias() {
+
+    if (!categoriesMenu) {
+        return;
+    }
+
+    categoriesMenu.innerHTML = "";
+
+    const botaoTodos =
+        document.createElement(
+            "button"
+        );
+
+    botaoTodos.className =
+        "categoria ativa";
+
+    botaoTodos.dataset.slug =
+        "todos";
+
+    botaoTodos.innerHTML = `
+        <span>🍔</span>
+
+        <small>
+            TODOS
+        </small>
+    `;
+
+    botaoTodos.addEventListener(
+        "click",
+        () => {
+
+            filtrarCategoria(
+                "todos"
+            );
+        }
+    );
+
+    categoriesMenu.appendChild(
+        botaoTodos
+    );
+
+
+    categories.forEach(
+        category => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.className =
+                "categoria";
+
+            button.dataset.category =
+                category.slug;
+
+            button.innerHTML = `
+    <span>
+        ${category.icon || "🍽️"}
+    </span>
+
+    <small>
+        ${category.name.toUpperCase()}
+    </small>
+`;
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    filtrarCategoria(
+                        category.slug
+                    );
+                }
+            );
+
+            categoriesMenu.appendChild(
+                button
+            );
+        }
+    );
+}
 
 
 /* =========================================================
@@ -107,6 +201,11 @@ const highlightsContainer =
 const productsContainer =
     document.getElementById(
         "lista-produtos"
+    );
+
+const categoriesMenu =
+    document.getElementById(
+        "categoriesMenu"
     );
 
 
@@ -285,9 +384,13 @@ function escapeHTML(text = "") {
 
 function getProductImage(product) {
 
+    const storeName =
+        storeSettings?.store_name ||
+        "Produto";
+
     return (
         product.image_url ||
-        "https://placehold.co/800x600?text=Nettinho+Lanches"
+        `https://placehold.co/800x600?text=${encodeURIComponent(storeName)}`
     );
 }
 
@@ -298,40 +401,18 @@ function getProductImage(product) {
 
 function getCategoryName(category) {
 
-    const categories = {
-
-        burgers:
-            "Burguer's",
-
-        combos:
-            "Combos",
-
-        especiais:
-            "Especiais",
-
-        hotdogs:
-            "Hot-Dog's",
-
-        pasteis:
-            "Pastéis",
-
-        massas:
-            "Massas",
-
-        bebidas:
-            "Bebidas",
-
-        adicionais:
-            "Adicionais"
-    };
+    const foundCategory =
+        categories.find(
+            item =>
+                item.slug === category
+        );
 
     return (
-        categories[category] ||
+        foundCategory?.name ||
         category ||
-        ""
+        "Sem categoria"
     );
 }
-
 
 /* =========================================================
    CONFIGURAÇÕES DA LOJA
@@ -346,6 +427,27 @@ async function carregarConfiguracoesLoja() {
         return false;
     }
 
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    const lojaSlug =
+        params.get("loja");
+
+    if (!lojaSlug) {
+
+        console.error(
+            "Loja não informada na URL."
+        );
+
+        alert(
+            "Loja não identificada."
+        );
+
+        return false;
+    }
+
     const {
         data,
         error
@@ -355,8 +457,32 @@ async function carregarConfiguracoesLoja() {
                 "store_settings"
             )
             .select("*")
-            .limit(1)
-            .single();
+            .eq(
+                "slug",
+                lojaSlug
+            )
+            .maybeSingle();
+
+    console.log("SLUG DA URL:", lojaSlug);
+    console.log("DADOS DA LOJA:", data);
+    console.log("ERRO SUPABASE:", error);
+
+    if (
+        error ||
+        !data
+    ) {
+
+        console.error(
+            "Erro ao carregar configurações da loja:",
+            error
+        );
+
+        alert(
+            "Loja não encontrada."
+        );
+
+        return false;
+    }
 
     if (error) {
 
@@ -371,6 +497,9 @@ async function carregarConfiguracoesLoja() {
     storeSettings =
         data;
 
+    document.title =
+        `Cardápio Digital | ${storeSettings.store_name || "Minha Loja"}`;
+
     WHATSAPP_NUMBER =
         String(
             data?.whatsapp ||
@@ -381,8 +510,74 @@ async function carregarConfiguracoesLoja() {
                 ""
             );
 
+    /* =========================================
+       APLICAR IDENTIDADE VISUAL DA LOJA
+    ========================================= */
+
+    const storeDisplayName =
+        document.getElementById(
+            "storeDisplayName"
+        );
+
+    const storeDisplaySlogan =
+        document.getElementById(
+            "storeDisplaySlogan"
+        );
+
+    const storeDisplaySince =
+        document.getElementById(
+            "storeDisplaySince"
+        );
+
+    const storeLogoContainer =
+        document.getElementById(
+            "storeLogoContainer"
+        );
+
+
+    if (storeDisplayName) {
+
+        storeDisplayName.textContent =
+            data.store_name ||
+            "Minha Loja";
+    }
+
+
+    if (storeDisplaySlogan) {
+
+        storeDisplaySlogan.textContent =
+            data.slogan ||
+            "";
+    }
+
+
+    if (storeDisplaySince) {
+
+        storeDisplaySince.textContent =
+            data.since_year
+                ? `DESDE ${data.since_year}`
+                : "";
+    }
+
+
+    if (
+        storeLogoContainer &&
+        data.logo_url
+    ) {
+
+        storeLogoContainer.innerHTML = `
+        <img
+            src="${data.logo_url}"
+            alt="${data.store_name || "Logo da loja"}"
+            class="store-logo-image"
+        >
+    `;
+
+    }
+
     return true;
 }
+
 
 
 /* =========================================================
@@ -577,20 +772,15 @@ async function carregarProdutos() {
         error
     } =
         await supabaseClient
-            .from(
-                "products"
-            )
+            .from("products")
             .select("*")
+            .eq(
+                "store_id",
+                storeSettings.id
+            )
             .eq(
                 "available",
                 true
-            )
-            .order(
-                "created_at",
-                {
-                    ascending:
-                        true
-                }
             );
 
     if (error) {
@@ -718,9 +908,9 @@ function getFilteredProducts() {
             .trim();
 
     const selectedCategory =
-        categoryMap[
-        currentCategory
-        ];
+        currentCategory === "todos"
+            ? null
+            : currentCategory;
 
     return products.filter(
         product => {
@@ -761,7 +951,6 @@ function getFilteredProducts() {
         }
     );
 }
-
 
 /* =========================================================
    ORDENAR PRODUTOS
@@ -1054,36 +1243,29 @@ function renderProducts() {
    FILTRAR CATEGORIA
 ========================================================= */
 
-function filtrarCategoria(
-    category
-) {
+function filtrarCategoria(category) {
 
     currentCategory =
         category;
 
-    categoryButtons.forEach(
-        button => {
+    const buttons =
+        categoriesMenu.querySelectorAll(
+            ".categoria"
+        );
 
-            const onclick =
-                button.getAttribute(
-                    "onclick"
-                ) || "";
+    buttons.forEach(button => {
 
-            const active =
-                onclick.includes(
-                    `'${category}'`
-                );
+        const buttonCategory =
+            button.dataset.category;
 
-            button.classList.toggle(
-                "ativa",
-                active
-            );
-        }
-    );
+        button.classList.toggle(
+            "ativa",
+            buttonCategory === category
+        );
+    });
 
     renderProducts();
 }
-
 
 /* =========================================================
    BUSCA
@@ -2706,10 +2888,18 @@ async function finalizarPedido() {
        DADOS DO PEDIDO
     ===================================================== */
 
+    if (!storeSettings?.id) {
+        alert("Erro: loja não identificada. Recarregue a página.");
+        return;
+    }
+
     const orderData = {
 
         order_number:
             numeroPedido,
+
+        store_id:
+            storeSettings?.id,
 
         customer_name:
             nome,
@@ -2799,7 +2989,7 @@ async function finalizarPedido() {
   ========================================= */
 
     let message =
-        `*NETTINHO LANCHES*`
+        `*${storeSettings?.store_name || "Minha Loja"}*`
         +
         `\n\n*PEDIDO #${numeroPedido}*`
         +
@@ -2897,6 +3087,7 @@ async function finalizarPedido() {
 
 
     try {
+
 
         const pedidoSalvo =
             await salvarPedidoNoSupabase(
@@ -3026,20 +3217,152 @@ document.addEventListener(
    para busca, ordenação, entrega e pagamento.
 */
 
+let storeSettingsRealtimeChannel = null;
+let categoriesRealtimeChannel = null;
 
+function iniciarRealtimeConfiguracoesLoja() {
+
+    if (
+        !supabaseClient ||
+        !storeSettings?.id
+    ) {
+        return;
+    }
+
+    if (storeSettingsRealtimeChannel) {
+        supabaseClient.removeChannel(
+            storeSettingsRealtimeChannel
+        );
+    }
+
+    storeSettingsRealtimeChannel =
+        supabaseClient
+            .channel(
+                `store-settings-${storeSettings.id}`
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "store_settings",
+                    filter:
+                        `id=eq.${storeSettings.id}`
+                },
+                async () => {
+
+                    await carregarConfiguracoesLoja();
+
+                    updateCartTotal();
+                }
+            )
+            .subscribe();
+}
 /* =========================================================
    INICIALIZAÇÃO
 ========================================================= */
+function iniciarRealtimeCategorias() {
 
+    if (
+        !supabaseClient ||
+        !storeSettings?.id
+    ) {
+        return;
+    }
+
+    if (categoriesRealtimeChannel) {
+        supabaseClient.removeChannel(
+            categoriesRealtimeChannel
+        );
+    }
+
+    categoriesRealtimeChannel =
+        supabaseClient
+            .channel(
+                `categories-${storeSettings.id}`
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "categories",
+                    filter:
+                        `store_id=eq.${storeSettings.id}`
+                },
+                async () => {
+
+                    await carregarCategorias();
+
+                    renderizarCategorias();
+                }
+            )
+            .subscribe();
+}
+
+let produtosRealtimeChannel = null;
+
+function iniciarRealtimeProdutos() {
+
+    if (
+        !supabaseClient ||
+        !storeSettings?.id
+    ) {
+        return;
+    }
+
+    if (produtosRealtimeChannel) {
+        supabaseClient.removeChannel(
+            produtosRealtimeChannel
+        );
+    }
+
+    produtosRealtimeChannel =
+        supabaseClient
+            .channel(
+                `products-${storeSettings.id}`
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "products",
+                    filter:
+                        `store_id=eq.${storeSettings.id}`
+                },
+                async () => {
+                    await carregarProdutos();
+                }
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "products",
+                    filter:
+                        `store_id=eq.${storeSettings.id}`
+                },
+                async () => {
+                    await carregarProdutos();
+                }
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "DELETE",
+                    schema: "public",
+                    table: "products"
+                },
+                async () => {
+                    await carregarProdutos();
+                }
+            )
+            .subscribe();
+}
 async function iniciarCardapio() {
 
-    console.log(
-        "🍔 Nettinho Lanches - V4.0"
-    );
-
-    console.log(
-        "☁️ Banco: Supabase"
-    );
 
     alternarEntrega();
 
@@ -3059,15 +3382,23 @@ async function iniciarCardapio() {
         );
     }
 
+    if (configuracoesCarregadas) {
+        iniciarRealtimeConfiguracoesLoja();
+    }
+
+    await carregarCategorias();
+    renderizarCategorias();
+
     /*
        Recalculamos depois de carregar
        a taxa configurada no banco.
     */
-
+    iniciarRealtimeCategorias();
     updateCartTotal();
-
     await carregarProdutos();
-}
+    iniciarRealtimeProdutos();
 
+
+}
 
 iniciarCardapio();
