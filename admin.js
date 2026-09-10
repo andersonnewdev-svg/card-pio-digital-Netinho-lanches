@@ -881,7 +881,7 @@ registerForm?.addEventListener(
                     password,
                     options: {
                         emailRedirectTo:
-                            new URL("admin.html", window.location.href).href
+                            "https://andersonnewdev-svg.github.io/card-pio-digital-Netinho-lanches/admin.html"
                     }
                 });
 
