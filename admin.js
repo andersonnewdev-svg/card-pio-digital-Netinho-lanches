@@ -1099,10 +1099,23 @@ async function carregarConfiguracoesLoja() {
         data.id;
 
     if (storePublicLink) {
-        storePublicLink.value =
-            data.slug
-                ? `${window.location.origin}/index.html?loja=${encodeURIComponent(data.slug)}`
-                : "";
+        if (data.slug) {
+            const publicUrl =
+                new URL(
+                    "index.html",
+                    window.location.href
+                );
+
+            publicUrl.searchParams.set(
+                "loja",
+                data.slug
+            );
+
+            storePublicLink.value =
+                publicUrl.href;
+        } else {
+            storePublicLink.value = "";
+        }
     }
 
     if (openStoreButton) {
