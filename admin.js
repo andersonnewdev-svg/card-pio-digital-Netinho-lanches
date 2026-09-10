@@ -872,7 +872,7 @@ registerForm?.addEventListener(
                     password,
                     options: {
                         emailRedirectTo:
-                            `${window.location.origin}/admin.html`
+                            new URL("admin.html", window.location.href).href
                     }
                 });
 
