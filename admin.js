@@ -45,6 +45,12 @@ const storePublicLink =
 const exportBackupButton =
     document.getElementById("exportBackupButton");
 
+const importBackupButton =
+    document.getElementById("importBackupButton");
+
+const importBackupFile =
+    document.getElementById("importBackupFile");
+
 
 /* =========================================================
    ELEMENTOS - CONFIGURAÇÕES DA LOJA
@@ -3134,6 +3140,193 @@ async function exportarBackupLoja() {
 exportBackupButton?.addEventListener(
     "click",
     exportarBackupLoja
+);
+
+importBackupButton?.addEventListener(
+    "click",
+    () => {
+        importBackupFile?.click();
+    }
+);
+
+importBackupFile?.addEventListener(
+    "change",
+    async () => {
+
+        const file =
+            importBackupFile.files?.[0];
+
+        if (!file) {
+            return;
+        }
+
+        try {
+
+            if (
+                file.type &&
+                file.type !== "application/json"
+            ) {
+                throw new Error(
+                    "Selecione um arquivo JSON válido."
+                );
+            }
+
+            const text =
+                await file.text();
+
+            const backup =
+                JSON.parse(text);
+
+            if (
+                !backup ||
+                !backup.store ||
+                !Array.isArray(backup.categories) ||
+                !Array.isArray(backup.products)
+            ) {
+                throw new Error(
+                    "Este arquivo não parece ser um backup válido do Cardápio Digital."
+                );
+            }
+
+            if (backup.version !== "4.0") {
+                throw new Error(
+                    "Versão de backup incompatível."
+                );
+            }
+
+            const confirmado =
+                confirm(
+                    "⚠️ Backup válido encontrado.\n\n" +
+                    `Loja: ${backup.store.store_name || "Sem nome"}\n` +
+                    `Categorias: ${backup.categories.length}\n` +
+                    `Produtos: ${backup.products.length}\n\n` +
+                    "Deseja continuar com a restauração?"
+                );
+
+            if (!confirmado) {
+                importBackupFile.value = "";
+                return;
+            }
+
+            if (!currentStoreSettingsId) {
+                throw new Error(
+                    "Loja atual não identificada."
+                );
+            }
+
+            const categoriasBackup =
+                backup.categories.map(
+                    categoria => ({
+                        name: categoria.name,
+                        slug: categoria.slug,
+                        icon: categoria.icon || null,
+                        active: categoria.active ?? true,
+                        store_id: currentStoreSettingsId
+                    })
+                );
+
+            const produtosBackup =
+                backup.products.map(
+                    produto => ({
+                        name: produto.name,
+                        description:
+                            produto.description || "",
+                        price: produto.price,
+                        category:
+                            produto.category || null,
+                        image_url:
+                            produto.image_url || null,
+                        available:
+                            produto.available ?? true,
+                        store_id: currentStoreSettingsId
+                    })
+                );
+
+            const {
+                error: apagarProdutosError
+            } =
+                await supabaseClient
+                    .from("products")
+                    .delete()
+                    .eq(
+                        "store_id",
+                        currentStoreSettingsId
+                    );
+
+            if (apagarProdutosError) {
+                throw apagarProdutosError;
+            }
+
+            const {
+                error: apagarCategoriasError
+            } =
+                await supabaseClient
+                    .from("categories")
+                    .delete()
+                    .eq(
+                        "store_id",
+                        currentStoreSettingsId
+                    );
+
+            if (apagarCategoriasError) {
+                throw apagarCategoriasError;
+            }
+
+            if (categoriasBackup.length > 0) {
+
+                const {
+                    error: categoriasError
+                } =
+                    await supabaseClient
+                        .from("categories")
+                        .insert(categoriasBackup);
+
+                if (categoriasError) {
+                    throw categoriasError;
+                }
+            }
+
+            if (produtosBackup.length > 0) {
+
+                const {
+                    error: produtosError
+                } =
+                    await supabaseClient
+                        .from("products")
+                        .insert(produtosBackup);
+
+                if (produtosError) {
+                    throw produtosError;
+                }
+            }
+
+            await Promise.all([
+                carregarCategorias(),
+                carregarCategoriasNoSelect(),
+                carregarProdutos()
+            ]);
+
+            alert(
+                "✅ Backup restaurado com sucesso!"
+            );
+        } catch (error) {
+
+            console.error(
+                "Erro ao ler backup:",
+                error
+            );
+
+            alert(
+                "❌ Não foi possível importar o backup.\n\n" +
+                error.message
+            );
+
+        } finally {
+
+            importBackupFile.value = "";
+
+        }
+    }
 );
 async function carregarProdutos() {
 
