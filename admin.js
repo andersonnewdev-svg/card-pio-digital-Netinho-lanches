@@ -1088,8 +1088,9 @@ async function carregarConfiguracoesLoja() {
             null;
 
         alert(
-            "👋 Bem-vindo!\n\n" +
-            "Configure os dados da sua loja para começar."
+            "👋 Bem-vindo ao Cardápio Digital!\n\n" +
+            "Para começar, configure os dados da sua loja abaixo.\n\n" +
+            "Depois de salvar, você poderá cadastrar categorias, produtos e receber pedidos."
         );
 
         return false;
@@ -1522,12 +1523,38 @@ async function uploadLogoLoja() {
     const file =
         storeLogoFile.files[0];
 
+    // Validação do tipo de arquivo
+    if (!file.type.startsWith("image/")) {
+        throw new Error(
+            "Selecione um arquivo de imagem válido para a logo."
+        );
+    }
+
+    // Limite máximo: 5 MB
+    const maxSize =
+        5 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+        throw new Error(
+            "A logo deve ter no máximo 5 MB."
+        );
+    }
+
+    // Formatos permitidos
     const extension =
         file.name
             .split(".")
             .pop()
             .toLowerCase();
 
+    const formatosPermitidos =
+        ["jpg", "jpeg", "png", "webp"];
+
+    if (!formatosPermitidos.includes(extension)) {
+        throw new Error(
+            "Formato não permitido. Use JPG, JPEG, PNG ou WEBP."
+        );
+    }
     const fileName =
         `logo.${extension}`;
 
