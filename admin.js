@@ -188,7 +188,7 @@ async function carregarCategorias() {
             "category-admin-item";
 
         item.innerHTML = `
-    <strong>${category.name}</strong>
+  <strong>${escapeHTML(category.name || "")}</strong>
 
     <span>
         ${category.active ? "Ativa" : "Inativa"}
@@ -428,6 +428,10 @@ const refreshOrdersButton =
 const orderFilterButtons =
     document.querySelectorAll(".order-filter");
 
+const orderPeriodButtons =
+    document.querySelectorAll(
+        ".order-period-button"
+    );
 
 const countTodos =
     document.getElementById("countTodos");
@@ -596,6 +600,8 @@ const todayCanceledCount =
 ========================================================= */
 
 let orders = [];
+
+let currentOrderPeriod = "hoje";
 
 let currentOrderStatus =
     "todos";
@@ -1151,8 +1157,19 @@ async function carregarConfiguracoesLoja() {
                 return;
             }
 
+            const storeLinkUrl =
+                new URL(
+                    "index.html",
+                    window.location.href
+                );
+
+            storeLinkUrl.searchParams.set(
+                "loja",
+                data.slug
+            );
+
             const storeLink =
-                `${window.location.origin}/index.html?loja=${encodeURIComponent(data.slug)}`;
+                storeLinkUrl.href;
 
             try {
                 await navigator.clipboard.writeText(storeLink);
@@ -1424,7 +1441,14 @@ storeSettingsForm?.addEventListener(
                             .update({
                                 logo_url: logoUrl
                             })
-                            .eq("id", novaLoja.id);
+                            .eq(
+                                "id",
+                                novaLoja.id
+                            )
+                            .eq(
+                                "owner_id",
+                                userData.user.id
+                            );
 
                     if (logoUpdateError) {
                         throw logoUpdateError;
@@ -1451,6 +1475,10 @@ storeSettingsForm?.addEventListener(
                     .eq(
                         "id",
                         id
+                    )
+                    .eq(
+                        "owner_id",
+                        userData.user.id
                     );
 
             error =
@@ -1798,21 +1826,26 @@ refreshOrdersButton?.addEventListener(
 
 function atualizarContadoresPedidos() {
 
-    const pedidosHoje =
-        orders.filter(
-            pedidoEhDeHoje
-        );
+    const pedidosPeriodo =
+        currentOrderPeriod ===
+            "todos"
+
+            ? orders
+
+            : orders.filter(
+                pedidoEhDeHoje
+            );
 
     if (countTodos) {
 
         countTodos.textContent =
-            pedidosHoje.length;
+            pedidosPeriodo.length;
     }
 
     if (countNovo) {
 
         countNovo.textContent =
-            pedidosHoje.filter(
+            pedidosPeriodo.filter(
                 pedido =>
                     pedido.status ===
                     "novo"
@@ -1822,7 +1855,7 @@ function atualizarContadoresPedidos() {
     if (countPreparando) {
 
         countPreparando.textContent =
-            pedidosHoje.filter(
+            pedidosPeriodo.filter(
                 pedido =>
                     pedido.status ===
                     "preparando"
@@ -1832,7 +1865,7 @@ function atualizarContadoresPedidos() {
     if (countSaiuEntrega) {
 
         countSaiuEntrega.textContent =
-            pedidosHoje.filter(
+            pedidosPeriodo.filter(
                 pedido =>
                     pedido.status ===
                     "saiu_entrega"
@@ -1842,7 +1875,7 @@ function atualizarContadoresPedidos() {
     if (countConcluido) {
 
         countConcluido.textContent =
-            pedidosHoje.filter(
+            pedidosPeriodo.filter(
                 pedido =>
                     pedido.status ===
                     "concluido"
@@ -1852,7 +1885,7 @@ function atualizarContadoresPedidos() {
     if (countCancelado) {
 
         countCancelado.textContent =
-            pedidosHoje.filter(
+            pedidosPeriodo.filter(
                 pedido =>
                     pedido.status ===
                     "cancelado"
@@ -1959,6 +1992,36 @@ function atualizarDashboardPedidosHoje() {
 /* =========================================================
    FILTROS DOS PEDIDOS
 ========================================================= */
+
+orderPeriodButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                currentOrderPeriod =
+                    button.dataset.period;
+
+                orderPeriodButtons.forEach(
+                    item => {
+                        item.classList.remove(
+                            "active"
+                        );
+                    }
+                );
+
+                button.classList.add(
+                    "active"
+                );
+
+                atualizarContadoresPedidos();
+
+                renderizarPedidos();
+            }
+        );
+    }
+);
 
 orderFilterButtons.forEach(
     button => {
@@ -2099,18 +2162,23 @@ function renderizarPedidos() {
         return;
     }
 
-    const pedidosHoje =
-        orders.filter(
-            pedidoEhDeHoje
-        );
+    const pedidosPeriodo =
+        currentOrderPeriod ===
+            "todos"
+
+            ? orders
+
+            : orders.filter(
+                pedidoEhDeHoje
+            );
 
     const pedidosFiltrados =
         currentOrderStatus ===
             "todos"
 
-            ? pedidosHoje
+            ? pedidosPeriodo
 
-            : pedidosHoje.filter(
+            : pedidosPeriodo.filter(
                 pedido =>
                     pedido.status ===
                     currentOrderStatus
@@ -3025,16 +3093,38 @@ async function exportarBackupLoja() {
 
     try {
 
+        const {
+            data: userData,
+            error: userError
+        } =
+            await supabaseClient.auth.getUser();
+
+        if (
+            userError ||
+            !userData?.user
+        ) {
+            alert("❌ Usuário não autenticado.");
+            return;
+        }
+
         const [
             configuracoesResult,
             categoriasResult,
-            produtosResult
+            produtosResult,
+            pedidosResult
         ] = await Promise.all([
 
             supabaseClient
                 .from("store_settings")
                 .select("*")
-                .eq("id", currentStoreSettingsId)
+                .eq(
+                    "id",
+                    currentStoreSettingsId
+                )
+                .eq(
+                    "owner_id",
+                    userData.user.id
+                )
                 .single(),
 
             supabaseClient
@@ -3045,7 +3135,15 @@ async function exportarBackupLoja() {
             supabaseClient
                 .from("products")
                 .select("*")
-                .eq("store_id", currentStoreSettingsId)
+                .eq("store_id", currentStoreSettingsId),
+
+            supabaseClient
+                .from("orders")
+                .select("*")
+                .eq(
+                    "store_id",
+                    currentStoreSettingsId
+                )
         ]);
 
         if (configuracoesResult.error) {
@@ -3060,6 +3158,10 @@ async function exportarBackupLoja() {
             throw produtosResult.error;
         }
 
+        if (pedidosResult.error) {
+            throw pedidosResult.error;
+        }
+
         const backup = {
             version: "4.0",
             exported_at:
@@ -3072,7 +3174,10 @@ async function exportarBackupLoja() {
                 categoriasResult.data || [],
 
             products:
-                produtosResult.data || []
+                produtosResult.data || [],
+
+            orders:
+                pedidosResult.data || []
         };
 
         const json =
@@ -3208,97 +3313,40 @@ importBackupFile?.addEventListener(
                 return;
             }
 
-            if (!currentStoreSettingsId) {
-                throw new Error(
-                    "Loja atual não identificada."
-                );
-            }
-
-            const categoriasBackup =
-                backup.categories.map(
-                    categoria => ({
-                        name: categoria.name,
-                        slug: categoria.slug,
-                        icon: categoria.icon || null,
-                        active: categoria.active ?? true,
-                        store_id: currentStoreSettingsId
-                    })
-                );
-
-            const produtosBackup =
-                backup.products.map(
-                    produto => ({
-                        name: produto.name,
-                        description:
-                            produto.description || "",
-                        price: produto.price,
-                        category:
-                            produto.category || null,
-                        image_url:
-                            produto.image_url || null,
-                        available:
-                            produto.available ?? true,
-                        store_id: currentStoreSettingsId
-                    })
-                );
-
             const {
-                error: apagarProdutosError
+                error: restoreError
             } =
                 await supabaseClient
-                    .from("products")
-                    .delete()
-                    .eq(
-                        "store_id",
-                        currentStoreSettingsId
+                    .rpc(
+                        "restore_store_backup",
+                        {
+                            p_store_id:
+                                currentStoreSettingsId,
+
+                            p_store:
+                                backup.store,
+
+                            p_categories:
+                                backup.categories,
+
+                            p_products:
+                                backup.products,
+
+                            p_orders:
+                                Object.prototype.hasOwnProperty.call(
+                                    backup,
+                                    "orders"
+                                )
+                                    ? backup.orders
+                                    : null
+                        }
                     );
 
-            if (apagarProdutosError) {
-                throw apagarProdutosError;
+            if (restoreError) {
+                throw restoreError;
             }
 
-            const {
-                error: apagarCategoriasError
-            } =
-                await supabaseClient
-                    .from("categories")
-                    .delete()
-                    .eq(
-                        "store_id",
-                        currentStoreSettingsId
-                    );
-
-            if (apagarCategoriasError) {
-                throw apagarCategoriasError;
-            }
-
-            if (categoriasBackup.length > 0) {
-
-                const {
-                    error: categoriasError
-                } =
-                    await supabaseClient
-                        .from("categories")
-                        .insert(categoriasBackup);
-
-                if (categoriasError) {
-                    throw categoriasError;
-                }
-            }
-
-            if (produtosBackup.length > 0) {
-
-                const {
-                    error: produtosError
-                } =
-                    await supabaseClient
-                        .from("products")
-                        .insert(produtosBackup);
-
-                if (produtosError) {
-                    throw produtosError;
-                }
-            }
+            await carregarConfiguracoesLoja();
 
             await Promise.all([
                 carregarCategorias(),

@@ -148,11 +148,15 @@ function renderizarCategorias() {
 
             button.innerHTML = `
     <span>
-        ${category.icon || "🍽️"}
+        ${escapeHTML(
+                category.icon || "🍽️"
+            )}
     </span>
 
     <small>
-        ${category.name.toUpperCase()}
+        ${escapeHTML(
+                category.name || ""
+            ).toUpperCase()}
     </small>
 `;
 
@@ -463,9 +467,6 @@ async function carregarConfiguracoesLoja() {
             )
             .maybeSingle();
 
-    console.log("SLUG DA URL:", lojaSlug);
-    console.log("DADOS DA LOJA:", data);
-    console.log("ERRO SUPABASE:", error);
 
     if (
         error ||
@@ -566,12 +567,16 @@ async function carregarConfiguracoesLoja() {
     ) {
 
         storeLogoContainer.innerHTML = `
-        <img
-            src="${data.logo_url}"
-            alt="${data.store_name || "Logo da loja"}"
-            class="store-logo-image"
-        >
-    `;
+    <img
+        src="${escapeHTML(
+            data.logo_url || ""
+        )}"
+        alt="${escapeHTML(
+            data.store_name || "Logo da loja"
+        )}"
+        class="store-logo-image"
+    >
+`;
 
     }
 
