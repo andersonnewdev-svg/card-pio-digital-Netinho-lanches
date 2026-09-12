@@ -424,20 +424,13 @@ function getCategoryName(category) {
 
 async function carregarConfiguracoesLoja() {
 
-    if (
-        !verificarSupabase()
-    ) {
-
-        return false;
-    }
-
     const params =
         new URLSearchParams(
             window.location.search
         );
 
     const lojaSlug =
-        params.get("loja");
+        params.get("loja") || "nettinho-lanches";
 
     if (!lojaSlug) {
 
