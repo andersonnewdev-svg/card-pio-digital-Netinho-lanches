@@ -3144,9 +3144,11 @@ async function finalizarPedido() {
        VALORES
     ===================================================== */
 
-    const taxaEntrega =
-        getDeliveryFee();
 
+    const taxaEntrega =
+        tipoPedido === "Entrega"
+            ? selectedDeliveryFee
+            : 0;
     const totalPedido =
         subtotalProdutos +
         taxaEntrega;
@@ -3314,10 +3316,23 @@ async function finalizarPedido() {
         }
     });
 
+    const selectRegiao =
+        document.getElementById("regiao-entrega");
+
+    const regiaoSelecionada =
+        selectRegiao?.options[
+            selectRegiao.selectedIndex
+        ]?.textContent || "";
+
     message +=
         `\n\n*RESUMO*`
         +
         `\nSubtotal: ${formatCurrency(subtotalProdutos)}`
+        + (
+            tipoPedido === "Entrega"
+                ? `\nRegião: ${regiaoSelecionada}`
+                : ""
+        )
         +
         `\nTaxa de entrega: ${formatCurrency(taxaEntrega)}`
         +
