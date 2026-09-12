@@ -2329,3 +2329,133 @@ img {
 .notificacao-app.aviso {
     border-left: 5px solid #f59e0b;
 }
+
+/* =========================================================
+   ESTADO VAZIO - PRODUTOS
+========================================================= */
+
+.produtos-vazio {
+    grid-column: 1 / -1;
+    width: 100%;
+    max-width: 520px;
+    margin: 40px auto;
+    padding: 40px 24px;
+
+    text-align: center;
+
+    background: #ffffff;
+    border-radius: 18px;
+
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.10);
+}
+
+.produtos-vazio-icone {
+    display: block;
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.produtos-vazio h3 {
+    margin: 0 0 10px;
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.produtos-vazio p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #666666;
+}
+
+/* =========================================================
+   CONFIRMAÇÃO PROFISSIONAL
+========================================================= */
+
+.confirmacao-app {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+}
+
+.confirmacao-card {
+    width: 100%;
+    max-width: 420px;
+
+    padding: 28px 24px;
+
+    text-align: center;
+
+    background: #ffffff;
+    border-radius: 18px;
+
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.22);
+}
+
+.confirmacao-icone {
+    font-size: 42px;
+    margin-bottom: 12px;
+}
+
+.confirmacao-card h3 {
+    margin: 0 0 10px;
+
+    font-size: 22px;
+    font-weight: 700;
+}
+
+.confirmacao-card p {
+    margin: 0 0 24px;
+
+    font-size: 15px;
+    line-height: 1.5;
+
+    color: #666666;
+}
+
+.confirmacao-acoes {
+    display: flex;
+    gap: 12px;
+}
+
+.confirmacao-acoes button {
+    flex: 1;
+
+    border: 0;
+    border-radius: 10px;
+
+    padding: 12px 16px;
+
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.confirmacao-cancelar {
+    background: #f3f4f6;
+    color: #333333;
+}
+
+.confirmacao-confirmar {
+    background: #ef4444;
+    color: #ffffff;
+}
+
+.confirmacao-acoes button:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 480px) {
+
+    .confirmacao-acoes {
+        flex-direction: column;
+    }
+}

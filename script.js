@@ -74,6 +74,83 @@ function mostrarNotificacao(mensagem, tipo = "sucesso") {
     }, 3000);
 }
 
+function mostrarConfirmacao(
+    mensagem,
+    aoConfirmar
+) {
+    const existente =
+        document.querySelector(".confirmacao-app");
+
+    if (existente) {
+        existente.remove();
+    }
+
+    const overlay =
+        document.createElement("div");
+
+    overlay.className = "confirmacao-app";
+
+    overlay.innerHTML = `
+        <div class="confirmacao-card">
+
+            <div class="confirmacao-icone">
+                🗑️
+            </div>
+
+            <h3>Remover item?</h3>
+
+            <p>${mensagem}</p>
+
+            <div class="confirmacao-acoes">
+
+                <button
+                    type="button"
+                    class="confirmacao-cancelar"
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    class="confirmacao-confirmar"
+                >
+                    Remover
+                </button>
+
+            </div>
+
+        </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const fechar = () => {
+        overlay.remove();
+    };
+
+    overlay
+        .querySelector(".confirmacao-cancelar")
+        .addEventListener("click", fechar);
+
+    overlay
+        .querySelector(".confirmacao-confirmar")
+        .addEventListener("click", () => {
+
+            fechar();
+
+            if (typeof aoConfirmar === "function") {
+                aoConfirmar();
+            }
+        });
+
+    overlay.addEventListener("click", event => {
+
+        if (event.target === overlay) {
+            fechar();
+        }
+    });
+}
+
 
 /* =========================================================
    MAPA DE CATEGORIAS
@@ -1245,24 +1322,19 @@ function renderProducts() {
     productsContainer.innerHTML =
         "";
 
-    if (
-        filteredProducts.length ===
-        0
-    ) {
-
+    if (filteredProducts.length === 0) {
         productsContainer.innerHTML = `
-            <div class="carrinho-vazio">
+        <div class="produtos-vazio">
+            <span class="produtos-vazio-icone">🍔</span>
 
-                <span>
-                    🔎
-                </span>
+            <h3>Nenhum produto disponível</h3>
 
-                <p>
-                    Nenhum produto encontrado.
-                </p>
-
-            </div>
-        `;
+            <p>
+                Não encontramos produtos disponíveis no momento.
+                Confira novamente em breve.
+            </p>
+        </div>
+    `;
 
         return;
     }
@@ -2027,12 +2099,16 @@ function renderCart() {
                     "click",
                     () => {
 
-                        removeFromCart(
-                            item.cartId
+                        mostrarConfirmacao(
+                            `Deseja remover ${item.name || "este item"} do carrinho?`,
+                            () => {
+                                removeFromCart(
+                                    item.cartId
+                                );
+                            }
                         );
                     }
                 );
-
             cartItems
                 .appendChild(
                     element
