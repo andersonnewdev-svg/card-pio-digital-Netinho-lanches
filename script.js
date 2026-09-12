@@ -43,6 +43,42 @@ let orderSubmitting =
    MAPA DE CATEGORIAS
 ========================================================= */
 
+function mostrarNotificacao(mensagem, tipo = "sucesso") {
+    const existente =
+        document.querySelector(".notificacao-app");
+
+    if (existente) {
+        existente.remove();
+    }
+
+    const notificacao =
+        document.createElement("div");
+
+    notificacao.className =
+        `notificacao-app ${tipo}`;
+
+    notificacao.textContent = mensagem;
+
+    document.body.appendChild(notificacao);
+
+    setTimeout(() => {
+        notificacao.classList.add("visivel");
+    }, 10);
+
+    setTimeout(() => {
+        notificacao.classList.remove("visivel");
+
+        setTimeout(() => {
+            notificacao.remove();
+        }, 300);
+    }, 3000);
+}
+
+
+/* =========================================================
+   MAPA DE CATEGORIAS
+========================================================= */
+
 let categories = [];
 
 async function carregarCategorias() {
@@ -434,15 +470,22 @@ async function carregarConfiguracoesLoja() {
 
     if (!lojaSlug) {
 
-        console.error(
-            "Loja não informada na URL."
-        );
+        document.body.innerHTML = `
+        <main class="loja-erro">
+            <div class="loja-erro-card">
+                <h1>Loja não encontrada</h1>
+                <p>
+                    Não foi possível identificar esta loja.
+                    Verifique se o link está correto.
+                </p>
+                <button onclick="window.location.reload()">
+                    Tentar novamente
+                </button>
+            </div>
+        </main>
+    `;
 
-        alert(
-            "Loja não identificada."
-        );
-
-        return false;
+        return;
     }
 
     const {
@@ -3209,7 +3252,7 @@ document.addEventListener(
 /*
    Seu index.html atual ainda possui alguns eventos inline
    como oninput/onchange.
-
+ 
    Para não executar a mesma função duas vezes,
    NÃO adicionamos listeners duplicados aqui
    para busca, ordenação, entrega e pagamento.

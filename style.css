@@ -2248,3 +2248,80 @@ img {
     cursor: not-allowed;
     transform: none;
 }
+
+.loja-erro {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.loja-erro-card {
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+    padding: 32px 24px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.loja-erro-card h1 {
+    margin-bottom: 12px;
+    font-size: 26px;
+}
+
+.loja-erro-card p {
+    margin-bottom: 22px;
+    line-height: 1.5;
+    color: #555;
+}
+
+.loja-erro-card button {
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.notificacao-app {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%, -20px);
+    z-index: 9999;
+
+    min-width: 280px;
+    max-width: 90%;
+
+    padding: 14px 18px;
+    border-radius: 12px;
+
+    font-weight: 600;
+    text-align: center;
+
+    opacity: 0;
+    transition: 0.3s ease;
+
+    background: #ffffff;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+}
+
+.notificacao-app.visivel {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.notificacao-app.sucesso {
+    border-left: 5px solid #22c55e;
+}
+
+.notificacao-app.erro {
+    border-left: 5px solid #ef4444;
+}
+
+.notificacao-app.aviso {
+    border-left: 5px solid #f59e0b;
+}
