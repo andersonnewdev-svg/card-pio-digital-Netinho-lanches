@@ -2293,14 +2293,18 @@ img {
     transform: translate(-50%, -20px);
     z-index: 9999;
 
-    min-width: 280px;
-    max-width: 90%;
+    width: calc(100% - 32px);
+    max-width: 460px;
 
     padding: 14px 18px;
     border-radius: 12px;
 
     font-weight: 600;
     text-align: center;
+    line-height: 1.4;
+
+    white-space: normal;
+    overflow-wrap: break-word;
 
     opacity: 0;
     transition: 0.3s ease;
