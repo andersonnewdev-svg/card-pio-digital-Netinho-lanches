@@ -35,6 +35,10 @@ let modalQuantity =
 let storeSettings =
     null;
 
+let deliveryFees = [];
+
+let selectedDeliveryFee = 0;
+
 let orderSubmitting =
     false;
 
@@ -735,6 +739,101 @@ async function carregarConfiguracoesLoja() {
     }
 
     return true;
+}
+
+async function carregarTaxasEntrega() {
+
+    if (!storeSettings?.id) {
+        console.warn(
+            "Loja não identificada para carregar taxas de entrega."
+        );
+        return;
+    }
+
+    const selectRegiao =
+        document.getElementById("regiao-entrega");
+
+    const taxaInfo =
+        document.getElementById("taxa-entrega-info");
+
+    if (!selectRegiao) {
+        return;
+    }
+
+    try {
+
+        const { data, error } =
+            await supabaseClient
+                .from("delivery_fees")
+                .select("id, region_name, fee")
+                .eq("store_id", storeSettings.id)
+                .eq("active", true)
+                .order("fee", {
+                    ascending: true
+                });
+
+        if (error) {
+            console.error(
+                "Erro ao carregar taxas de entrega:",
+                error
+            );
+            return;
+        }
+
+        deliveryFees = data || [];
+
+        selectRegiao.innerHTML = `
+            <option value="">
+                Selecione sua região
+            </option>
+        `;
+
+        deliveryFees.forEach(regiao => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = regiao.id;
+
+            option.textContent =
+                `${regiao.region_name} - R$ ${Number(
+                    regiao.fee
+                ).toFixed(2).replace(".", ",")}`;
+
+            option.dataset.fee =
+                regiao.fee;
+
+            selectRegiao.appendChild(option);
+        });
+
+        selectRegiao.onchange = () => {
+
+            const opcao =
+                selectRegiao.options[
+                selectRegiao.selectedIndex
+                ];
+
+            selectedDeliveryFee =
+                Number(
+                    opcao?.dataset?.fee || 0
+                );
+
+            if (taxaInfo) {
+
+                taxaInfo.textContent =
+                    `Taxa de entrega: R$ ${selectedDeliveryFee
+                        .toFixed(2)
+                        .replace(".", ",")}`;
+            }
+        };
+
+    } catch (erro) {
+
+        console.error(
+            "Erro inesperado ao carregar taxas:",
+            erro
+        );
+    }
 }
 
 
@@ -3558,6 +3657,9 @@ async function iniciarCardapio() {
 
         if (configuracoesCarregadas) {
             iniciarRealtimeConfiguracoesLoja();
+
+            await carregarTaxasEntrega();
+
         }
 
         await carregarCategorias();
