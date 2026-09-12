@@ -514,8 +514,9 @@ async function carregarConfiguracoesLoja() {
             error
         );
 
-        alert(
-            "Loja não encontrada."
+        mostrarNotificacao(
+            "Loja não encontrada.",
+            "erro"
         );
 
         return false;
@@ -2599,8 +2600,9 @@ async function finalizarPedido() {
         0
     ) {
 
-        alert(
-            "Seu carrinho está vazio."
+        mostrarNotificacao(
+            "Seu carrinho está vazio.",
+            "aviso"
         );
 
         return;
@@ -2610,8 +2612,9 @@ async function finalizarPedido() {
         !storeSettings
     ) {
 
-        alert(
-            "Não foi possível carregar as configurações da loja."
+        mostrarNotificacao(
+            "Não foi possível carregar as configurações da loja.",
+            "erro"
         );
 
         return;
@@ -2624,10 +2627,11 @@ async function finalizarPedido() {
         const horario =
             getHorarioLojaTexto();
 
-        alert(
+        mostrarNotificacao(
             horario
-                ? `A loja está fechada no momento.\n\nHorário de funcionamento: ${horario}.`
-                : "A loja está fechada no momento."
+                ? `A loja está fechada no momento.\n\nHorário de funcionamento: ${horario}`
+                : "A loja está fechada no momento.",
+            "aviso"
         );
 
         return;
@@ -2652,8 +2656,9 @@ async function finalizarPedido() {
         !whatsappNumber
     ) {
 
-        alert(
-            "WhatsApp da loja não configurado."
+        mostrarNotificacao(
+            "WhatsApp da loja não configurado.",
+            "erro"
         );
 
         return;
@@ -2681,7 +2686,7 @@ async function finalizarPedido() {
         minimumOrder
     ) {
 
-        alert(
+        mostrarNotificacao(
             "O pedido mínimo é de " +
             formatCurrency(
                 minimumOrder
@@ -2691,7 +2696,8 @@ async function finalizarPedido() {
             formatCurrency(
                 subtotalProdutos
             ) +
-            "."
+            ".",
+            "aviso"
         );
 
         return;
@@ -2772,10 +2778,10 @@ async function finalizarPedido() {
         !nome
     ) {
 
-        alert(
-            "Digite seu nome."
+        mostrarNotificacao(
+            "Digite seu nome.",
+            "aviso"
         );
-
         return;
     }
 
@@ -2783,8 +2789,9 @@ async function finalizarPedido() {
         !telefone
     ) {
 
-        alert(
-            "Digite seu telefone."
+        mostrarNotificacao(
+            "Digite seu telefone.",
+            "aviso"
         );
 
         return;
@@ -2801,8 +2808,9 @@ async function finalizarPedido() {
         8
     ) {
 
-        alert(
-            "Digite um telefone válido."
+        mostrarNotificacao(
+            "Digite um telefone válido.",
+            "aviso"
         );
 
         return;
@@ -2815,8 +2823,9 @@ async function finalizarPedido() {
         !endereco
     ) {
 
-        alert(
-            "Digite o endereço de entrega."
+        mostrarNotificacao(
+            "Digite o endereço de entrega.",
+            "aviso"
         );
 
         return;
@@ -2826,8 +2835,9 @@ async function finalizarPedido() {
         !pagamento
     ) {
 
-        alert(
-            "Selecione a forma de pagamento."
+        mostrarNotificacao(
+            "Selecione a forma de pagamento.",
+            "aviso"
         );
 
         return;
@@ -2860,8 +2870,9 @@ async function finalizarPedido() {
             )
         ) {
 
-            alert(
-                "Digite um valor válido para o troco."
+            mostrarNotificacao(
+                "Digite um valor válido para o troco.",
+                "aviso"
             );
 
             return;
@@ -2872,8 +2883,9 @@ async function finalizarPedido() {
             calculateTotal()
         ) {
 
-            alert(
-                "O valor informado para troco não pode ser menor que o total do pedido."
+            mostrarNotificacao(
+                "O valor informado para troco não pode ser menor que o total do pedido.",
+                "aviso"
             );
 
             return;
@@ -2930,7 +2942,7 @@ async function finalizarPedido() {
     ===================================================== */
 
     if (!storeSettings?.id) {
-        alert("Erro: loja não identificada. Recarregue a página.");
+        mostrarNotificacao("Erro: loja não identificada. Recarregue a página.", "erro");
         return;
     }
 
@@ -3169,8 +3181,9 @@ async function finalizarPedido() {
             !whatsappWindow
         ) {
 
-            alert(
-                "O navegador bloqueou a abertura do WhatsApp.\n\nPermita pop-ups para este site e tente novamente."
+            mostrarNotificacao(
+                "O navegador bloqueou a abertura do WhatsApp.\n\nPermita pop-ups para este site e tente novamente.",
+                "aviso"
             );
 
             return;
@@ -3192,8 +3205,9 @@ async function finalizarPedido() {
             error
         );
 
-        alert(
-            "Não foi possível finalizar o pedido. Tente novamente."
+        mostrarNotificacao(
+            "Não foi possível finalizar o pedido. Tente novamente.",
+            "erro"
         );
 
     } finally {
