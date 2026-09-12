@@ -1411,3 +1411,48 @@ body {
     width: 100%;
     box-sizing: border-box;
 }
+
+.notificacao-admin {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translate(-50%, -20px);
+
+    z-index: 20000;
+
+    width: calc(100% - 32px);
+    max-width: 460px;
+
+    padding: 14px 18px;
+
+    border-radius: 12px;
+
+    background: #ffffff;
+
+    font-weight: 600;
+    text-align: center;
+    line-height: 1.4;
+
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.18);
+
+    opacity: 0;
+
+    transition: 0.3s ease;
+}
+
+.notificacao-admin.visivel {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.notificacao-admin.sucesso {
+    border-left: 5px solid #22c55e;
+}
+
+.notificacao-admin.erro {
+    border-left: 5px solid #ef4444;
+}
+
+.notificacao-admin.aviso {
+    border-left: 5px solid #f59e0b;
+}
