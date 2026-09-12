@@ -1390,6 +1390,15 @@ storeSettingsForm?.addEventListener(
 
         let error;
 
+        const botaoSalvar = event.submitter;
+        const textoOriginalBotao =
+            botaoSalvar?.innerHTML;
+
+        if (botaoSalvar) {
+            botaoSalvar.disabled = true;
+            botaoSalvar.innerHTML = "Salvando...";
+        }
+
         if (!id) {
 
             const slugBase =
@@ -1497,7 +1506,19 @@ storeSettingsForm?.addEventListener(
                 error.message
             );
 
+            if (botaoSalvar) {
+                botaoSalvar.disabled = false;
+                botaoSalvar.innerHTML =
+                    textoOriginalBotao;
+            }
+
             return;
+        }
+
+        if (botaoSalvar) {
+            botaoSalvar.disabled = false;
+            botaoSalvar.innerHTML =
+                textoOriginalBotao;
         }
 
         alert(
