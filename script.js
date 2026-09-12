@@ -43,6 +43,46 @@ let orderSubmitting =
    MAPA DE CATEGORIAS
 ========================================================= */
 
+function mostrarCarregamentoCardapio() {
+    const existente =
+        document.querySelector(".carregamento-cardapio");
+
+    if (existente) {
+        existente.remove();
+    }
+
+    const loading =
+        document.createElement("div");
+
+    loading.className =
+        "carregamento-cardapio";
+
+    loading.innerHTML = `
+        <div class="carregamento-cardapio-card">
+            <div class="carregamento-spinner"></div>
+
+            <strong>
+                Carregando cardápio...
+            </strong>
+
+            <span>
+                Aguarde um momento.
+            </span>
+        </div>
+    `;
+
+    document.body.appendChild(loading);
+}
+
+function esconderCarregamentoCardapio() {
+    const loading =
+        document.querySelector(".carregamento-cardapio");
+
+    if (loading) {
+        loading.remove();
+    }
+}
+
 function mostrarNotificacao(mensagem, tipo = "sucesso") {
     const existente =
         document.querySelector(".notificacao-app");
@@ -3494,42 +3534,59 @@ function iniciarRealtimeProdutos() {
 }
 async function iniciarCardapio() {
 
+    mostrarCarregamentoCardapio();
 
-    alternarEntrega();
+    try {
 
-    alternarTroco();
+        alternarEntrega();
 
-    updateCart();
+        alternarTroco();
 
-    const configuracoesCarregadas =
-        await carregarConfiguracoesLoja();
+        updateCart();
 
-    if (
-        !configuracoesCarregadas
-    ) {
+        const configuracoesCarregadas =
+            await carregarConfiguracoesLoja();
 
-        console.warn(
-            "Configurações da loja não foram carregadas."
+        if (
+            !configuracoesCarregadas
+        ) {
+
+            console.warn(
+                "Configurações da loja não foram carregadas."
+            );
+        }
+
+        if (configuracoesCarregadas) {
+            iniciarRealtimeConfiguracoesLoja();
+        }
+
+        await carregarCategorias();
+        renderizarCategorias();
+
+        iniciarRealtimeCategorias();
+
+        updateCartTotal();
+
+        await carregarProdutos();
+
+        iniciarRealtimeProdutos();
+
+    } catch (error) {
+
+        console.error(
+            "Erro ao iniciar cardápio:",
+            error
         );
+
+        mostrarNotificacao(
+            "Não foi possível carregar o cardápio.",
+            "erro"
+        );
+
+    } finally {
+
+        esconderCarregamentoCardapio();
     }
-
-    if (configuracoesCarregadas) {
-        iniciarRealtimeConfiguracoesLoja();
-    }
-
-    await carregarCategorias();
-    renderizarCategorias();
-
-    /*
-       Recalculamos depois de carregar
-       a taxa configurada no banco.
-    */
-    iniciarRealtimeCategorias();
-    updateCartTotal();
-    await carregarProdutos();
-    iniciarRealtimeProdutos();
-
-
 }
 
 iniciarCardapio();

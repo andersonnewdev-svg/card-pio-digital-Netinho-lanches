@@ -2459,3 +2459,69 @@ img {
         flex-direction: column;
     }
 }
+
+/* =========================================================
+   CARREGAMENTO DO CARDÁPIO
+========================================================= */
+
+.carregamento-cardapio {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(3px);
+}
+
+.carregamento-cardapio-card {
+    width: 100%;
+    max-width: 360px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+
+    padding: 28px 24px;
+
+    text-align: center;
+
+    background: #ffffff;
+    border-radius: 18px;
+
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+}
+
+.carregamento-spinner {
+    width: 42px;
+    height: 42px;
+
+    margin-bottom: 6px;
+
+    border: 4px solid #e5e7eb;
+    border-top-color: #111827;
+    border-radius: 50%;
+
+    animation: girarCarregamento 0.8s linear infinite;
+}
+
+.carregamento-cardapio-card strong {
+    font-size: 18px;
+}
+
+.carregamento-cardapio-card span {
+    font-size: 14px;
+    color: #666666;
+}
+
+@keyframes girarCarregamento {
+    to {
+        transform: rotate(360deg);
+    }
+}
