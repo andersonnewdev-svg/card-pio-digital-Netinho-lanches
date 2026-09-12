@@ -136,6 +136,37 @@ const categoriesList =
 
 let adminCategoriesData = [];
 
+function mostrarNotificacao(mensagem, tipo = "sucesso") {
+    const existente =
+        document.querySelector(".notificacao-admin");
+
+    if (existente) {
+        existente.remove();
+    }
+
+    const notificacao =
+        document.createElement("div");
+
+    notificacao.className =
+        `notificacao-admin ${tipo}`;
+
+    notificacao.textContent = mensagem;
+
+    document.body.appendChild(notificacao);
+
+    setTimeout(() => {
+        notificacao.classList.add("visivel");
+    }, 10);
+
+    setTimeout(() => {
+        notificacao.classList.remove("visivel");
+
+        setTimeout(() => {
+            notificacao.remove();
+        }, 300);
+    }, 3000);
+}
+
 async function carregarCategorias() {
 
     if (!currentStoreSettingsId) {
@@ -253,8 +284,9 @@ async function carregarCategorias() {
                         error
                     );
 
-                    alert(
-                        "Erro ao alterar categoria."
+                    mostrarNotificacao(
+                        "Erro ao alterar categoria.",
+                        "erro"
                     );
 
                     return;
@@ -331,8 +363,9 @@ async function carregarCategorias() {
                         error
                     );
 
-                    alert(
-                        "Erro ao excluir categoria."
+                    mostrarNotificacao(
+                        "Erro ao excluir categoria.",
+                        "erro"
                     );
 
                     return;
@@ -474,8 +507,9 @@ categoryForm?.addEventListener(
 
         if (!name) {
 
-            alert(
-                "Informe o nome da categoria."
+            mostrarNotificacao(
+                "Preencha o nome da categoria.",
+                "erro"
             );
 
             return;
@@ -483,8 +517,9 @@ categoryForm?.addEventListener(
 
         if (!currentStoreSettingsId) {
 
-            alert(
-                "Erro: loja não identificada."
+            mostrarNotificacao(
+                "Erro: loja não identificada.",
+                "erro"
             );
 
             return;
@@ -547,15 +582,17 @@ categoryForm?.addEventListener(
                 error
             );
 
-            alert(
-                "Erro ao salvar categoria."
+            mostrarNotificacao(
+                "Erro ao salvar categoria.",
+                "erro"
             );
 
             return;
         }
 
-        alert(
-            "Categoria cadastrada com sucesso!"
+        mostrarNotificacao(
+            "Categoria cadastrada com sucesso!",
+            "sucesso"
         );
 
         categoryForm.reset();
@@ -905,14 +942,18 @@ registerForm?.addEventListener(
         }
 
         if (data.session) {
-            alert("✅ Conta criada com sucesso!");
+            mostrarNotificacao(
+                "Conta criada com sucesso!",
+                "sucesso"
+            );
 
             await showAdminPanel();
             return;
         }
 
-        alert(
-            "✅ Conta criada! Verifique seu e-mail para confirmar o cadastro."
+        mostrarNotificacao(
+            "✅ Conta criada! Verifique seu e-mail para confirmar o cadastro.",
+            "sucesso"
         );
 
         registerForm.reset();
@@ -1027,8 +1068,10 @@ logoutButton?.addEventListener(
                 error
             );
 
-            alert(
-                "Erro ao sair do painel."
+            mostrarNotificacao(
+                "Erro ao sair: " +
+                error.message,
+                "erro"
             );
 
             return;
@@ -1102,10 +1145,11 @@ async function carregarConfiguracoesLoja() {
         currentStoreSettingsId =
             null;
 
-        alert(
+        mostrarNotificacao(
             "👋 Bem-vindo ao Cardápio Digital!\n\n" +
             "Para começar, configure os dados da sua loja abaixo.\n\n" +
-            "Depois de salvar, você poderá cadastrar categorias, produtos e receber pedidos."
+            "Depois de salvar, você poderá cadastrar categorias, produtos e receber pedidos.",
+            "info"
         );
 
         return false;
@@ -1138,7 +1182,10 @@ async function carregarConfiguracoesLoja() {
         openStoreButton.onclick = () => {
 
             if (!data.slug) {
-                alert("Esta loja ainda não possui um link.");
+                mostrarNotificacao(
+                    "Esta loja ainda não possui um link.",
+                    "erro"
+                );
                 return;
             }
 
@@ -1153,7 +1200,10 @@ async function carregarConfiguracoesLoja() {
         copyStoreLinkButton.onclick = async () => {
 
             if (!data.slug) {
-                alert("Esta loja ainda não possui um link.");
+                mostrarNotificacao(
+                    "Esta loja ainda não possui um link.",
+                    "erro"
+                );
                 return;
             }
 
@@ -1174,14 +1224,20 @@ async function carregarConfiguracoesLoja() {
             try {
                 await navigator.clipboard.writeText(storeLink);
 
-                alert("✅ Link do cardápio copiado!");
+                mostrarNotificacao(
+                    "✅ Link do cardápio copiado!",
+                    "sucesso"
+                );
             } catch (error) {
                 console.error(
                     "Erro ao copiar link:",
                     error
                 );
 
-                alert("❌ Não foi possível copiar o link.");
+                mostrarNotificacao(
+                    "❌ Não foi possível copiar o link.",
+                    "erro"
+                );
             }
         };
     }
@@ -1297,8 +1353,9 @@ storeSettingsForm?.addEventListener(
             !userData?.user
         ) {
 
-            alert(
-                "❌ Usuário não autenticado."
+            mostrarNotificacao(
+                "❌ Usuário não autenticado.",
+                "erro"
             );
 
             return;
@@ -1310,8 +1367,9 @@ storeSettingsForm?.addEventListener(
 
         if (!whatsapp) {
 
-            alert(
-                "Informe o WhatsApp da loja."
+            mostrarNotificacao(
+                "Informe o WhatsApp da loja.",
+                "erro"
             );
 
             return;
@@ -1329,9 +1387,10 @@ storeSettingsForm?.addEventListener(
 
             } catch (error) {
 
-                alert(
+                mostrarNotificacao(
                     "❌ Não foi possível enviar a logo.\n\n" +
-                    error.message
+                    error.message,
+                    "erro"
                 );
 
                 return;
@@ -1501,9 +1560,10 @@ storeSettingsForm?.addEventListener(
                 error
             );
 
-            alert(
+            mostrarNotificacao(
                 "❌ Erro ao salvar configurações:\n\n" +
-                error.message
+                error.message,
+                "erro"
             );
 
             if (botaoSalvar) {
@@ -1521,8 +1581,9 @@ storeSettingsForm?.addEventListener(
                 textoOriginalBotao;
         }
 
-        alert(
-            "✅ Configurações salvas com sucesso!"
+        mostrarNotificacao(
+            "✅ Configurações salvas com sucesso!",
+            "sucesso"
         );
 
         await carregarConfiguracoesLoja();
@@ -2703,8 +2764,9 @@ async function alterarStatusPedido(
             error
         );
 
-        alert(
-            "Erro ao alterar status do pedido."
+        mostrarNotificacao(
+            "Erro ao alterar status do pedido.",
+            "erro"
         );
 
         return;
@@ -3108,7 +3170,10 @@ function mostrarToastNovoPedido(
 async function exportarBackupLoja() {
 
     if (!currentStoreSettingsId) {
-        alert("❌ Loja não identificada.");
+        mostrarNotificacao(
+            "Erro: loja não identificada.",
+            "erro"
+        );
         return;
     }
 
@@ -3124,7 +3189,10 @@ async function exportarBackupLoja() {
             userError ||
             !userData?.user
         ) {
-            alert("❌ Usuário não autenticado.");
+            mostrarNotificacao(
+                "❌ Usuário não autenticado.",
+                "erro"
+            );
             return;
         }
 
@@ -3244,8 +3312,9 @@ async function exportarBackupLoja() {
 
         URL.revokeObjectURL(url);
 
-        alert(
-            "✅ Backup exportado com sucesso!"
+        mostrarNotificacao(
+            "✅ Backup exportado com sucesso!",
+            "sucesso"
         );
 
     } catch (error) {
@@ -3255,9 +3324,10 @@ async function exportarBackupLoja() {
             error
         );
 
-        alert(
+        mostrarNotificacao(
             "❌ Não foi possível exportar o backup.\n\n" +
-            error.message
+            error.message,
+            "erro"
         );
     }
 }
@@ -3375,8 +3445,9 @@ importBackupFile?.addEventListener(
                 carregarProdutos()
             ]);
 
-            alert(
-                "✅ Backup restaurado com sucesso!"
+            mostrarNotificacao(
+                "✅ Backup restaurado com sucesso!",
+                "sucesso"
             );
         } catch (error) {
 
@@ -3385,9 +3456,10 @@ importBackupFile?.addEventListener(
                 error
             );
 
-            alert(
+            mostrarNotificacao(
                 "❌ Não foi possível importar o backup.\n\n" +
-                error.message
+                error.message,
+                "erro"
             );
 
         } finally {
@@ -3884,9 +3956,10 @@ productForm?.addEventListener(
                 error
             );
 
-            alert(
-                "❌ Não foi possível enviar a imagem do produto.\n\n" +
-                error.message
+            mostrarNotificacao(
+                "❌ Erro ao enviar imagem do produto:\n\n" +
+                error.message,
+                "erro"
             );
 
             return;
@@ -3896,8 +3969,9 @@ productForm?.addEventListener(
 
         if (!name) {
 
-            alert(
-                "Digite o nome do produto."
+            mostrarNotificacao(
+                "Digite o nome do produto.",
+                "erro"
             );
 
             return;
@@ -3908,8 +3982,9 @@ productForm?.addEventListener(
             price <= 0
         ) {
 
-            alert(
-                "Digite um preço válido."
+            mostrarNotificacao(
+                "Digite um preço válido.",
+                "erro"
             );
 
             return;
@@ -3969,9 +4044,10 @@ productForm?.addEventListener(
                 error
             );
 
-            alert(
+            mostrarNotificacao(
                 "❌ Erro ao salvar produto:\n\n" +
-                error.message
+                error.message,
+                "erro"
             );
 
             return;
@@ -4025,10 +4101,11 @@ productForm?.addEventListener(
         productId.value =
             "";
 
-        alert(
+        mostrarNotificacao(
             id
                 ? "✅ Produto atualizado com sucesso!"
-                : "✅ Produto cadastrado com sucesso!"
+                : "✅ Produto cadastrado com sucesso!",
+            "sucesso"
         );
 
         await carregarProdutos();
@@ -4068,9 +4145,10 @@ async function editarProduto(
             error
         );
 
-        alert(
+        mostrarNotificacao(
             "Erro ao buscar produto:\n\n" +
-            error.message
+            error.message,
+            "erro"
         );
 
         return;
@@ -4142,9 +4220,10 @@ async function alternarProduto(
             error
         );
 
-        alert(
+        mostrarNotificacao(
             "Erro ao alterar disponibilidade:\n\n" +
-            error.message
+            error.message,
+            "erro"
         );
 
         return;
@@ -4191,8 +4270,9 @@ async function excluirProduto(
             produtoError
         );
 
-        alert(
-            "❌ Não foi possível localizar o produto."
+        mostrarNotificacao(
+            "❌ Não foi possível localizar o produto.",
+            "erro"
         );
 
         return;
@@ -4220,9 +4300,10 @@ async function excluirProduto(
             error
         );
 
-        alert(
+        mostrarNotificacao(
             "❌ Erro ao excluir produto:\n\n" +
-            error.message
+            error.message,
+            "erro"
         );
 
         return;
@@ -4266,8 +4347,9 @@ async function excluirProduto(
         }
     }
 
-    alert(
-        "🗑️ Produto excluído com sucesso!"
+    mostrarNotificacao(
+        "🗑️ Produto excluído com sucesso!",
+        "sucesso"
     );
 
     await carregarProdutos();
