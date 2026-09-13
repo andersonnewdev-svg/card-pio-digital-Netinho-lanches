@@ -1204,12 +1204,19 @@ function getFilteredProducts() {
     return products.filter(
         product => {
 
-            const categoryMatch =
-                !selectedCategory
-                ||
-                product.category ===
-                selectedCategory;
+            const productCategory =
+                String(product.category || "")
+                    .trim()
+                    .toLowerCase();
 
+            const selectedCategoryNormalized =
+                String(selectedCategory || "")
+                    .trim()
+                    .toLowerCase();
+
+            const categoryMatch =
+                !selectedCategoryNormalized ||
+                productCategory === selectedCategoryNormalized;
             const name =
                 (
                     product.name ||
