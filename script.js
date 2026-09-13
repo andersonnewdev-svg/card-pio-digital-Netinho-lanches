@@ -741,6 +741,37 @@ async function carregarConfiguracoesLoja() {
     return true;
 }
 
+function iniciarRealtimeConfiguracoes() {
+
+    if (!storeSettings?.id) {
+        return;
+    }
+
+    supabaseClient
+        .channel(`store-settings-${storeSettings.id}`)
+        .on(
+            "postgres_changes",
+            {
+                event: "UPDATE",
+                schema: "public",
+                table: "store_settings",
+                filter: `id=eq.${storeSettings.id}`
+            },
+            payload => {
+
+                console.log(
+                    "Configurações atualizadas em tempo real:",
+                    payload.new
+                );
+
+                storeSettings = payload.new;
+
+                renderHighlights();
+            }
+        )
+        .subscribe();
+}
+
 async function carregarTaxasEntrega() {
 
     if (!storeSettings?.id) {
@@ -3545,6 +3576,7 @@ function iniciarRealtimeConfiguracoesLoja() {
                 async () => {
 
                     await carregarConfiguracoesLoja();
+                    renderHighlights();
 
                     updateCartTotal();
                 }
