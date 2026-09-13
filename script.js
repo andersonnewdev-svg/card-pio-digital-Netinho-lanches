@@ -1396,6 +1396,14 @@ function renderHighlights() {
     highlightsContainer.innerHTML =
         "";
 
+    if (storeSettings?.show_featured === false) {
+        highlightsContainer.innerHTML = "";
+        highlightsContainer.closest("section")?.classList.add("hidden");
+        return;
+    }
+
+    highlightsContainer.closest("section")?.classList.remove("hidden");
+
     const featured =
         products
             .filter(

@@ -1259,6 +1259,9 @@ async function carregarConfiguracoesLoja() {
     storeSlogan.value =
         data.slogan || "";
 
+    document.getElementById("showFeatured").value =
+        data.show_featured === false ? "false" : "true";
+
     storeLogoUrl.value =
         data.logo_url || "";
 
@@ -1404,6 +1407,9 @@ storeSettingsForm?.addEventListener(
 
             slogan:
                 storeSlogan.value.trim(),
+
+            show_featured:
+                document.getElementById("showFeatured").value === "true",
 
             logo_url:
                 logoUrl,
