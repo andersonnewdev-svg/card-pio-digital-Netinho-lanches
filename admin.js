@@ -4006,6 +4006,7 @@ productForm?.addEventListener(
             description,
             image_url,
             available,
+            featured: productFeatured.checked,
             store_id: currentStoreSettingsId
         };
 
@@ -4183,6 +4184,9 @@ async function editarProduto(
 
     productAvailable.checked =
         data.available !== false;
+
+    productFeatured.checked =
+        data.featured === true;
 
     modalTitle.textContent =
         "Editar Produto";
