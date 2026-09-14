@@ -1450,10 +1450,7 @@ function renderHighlights() {
                     product.available !== false &&
                     product.category !== "adicionais"
             )
-            .slice(
-                0,
-                4
-            );
+
 
     if (
         featured.length ===
