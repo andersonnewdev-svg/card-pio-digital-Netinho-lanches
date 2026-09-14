@@ -723,6 +723,9 @@ const productImageFile =
 const productAvailable =
     document.getElementById("productAvailable");
 
+const productFeatured =
+    document.getElementById("productFeatured");
+
 
 /* =========================================================
    ESTADO DOS PRODUTOS
