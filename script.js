@@ -1446,8 +1446,9 @@ function renderHighlights() {
         products
             .filter(
                 product =>
-                    product.category !==
-                    "adicionais"
+                    product.featured === true &&
+                    product.available !== false &&
+                    product.category !== "adicionais"
             )
             .slice(
                 0,
