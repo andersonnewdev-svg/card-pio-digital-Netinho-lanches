@@ -2529,3 +2529,1010 @@ img {
 /* =========================================================
    NOTIFICAÇÕES DO ADMIN
 ========================================================= */
+/* =========================================================
+   NETTINHO LANCHES
+   NOVO MENU DE CATEGORIAS - MOBILE
+========================================================= */
+
+.categorias {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    width: 100%;
+    padding: 10px 12px;
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+
+    background: #fff;
+
+    scrollbar-width: none;
+}
+
+.categorias::-webkit-scrollbar {
+    display: none;
+}
+
+
+/* BOTÃO DA CATEGORIA */
+
+.categorias .categoria {
+    flex: 0 0 auto;
+
+    min-width: 105px;
+    height: 78px;
+
+    padding: 8px 12px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    border: 1px solid #ddd;
+    border-radius: 10px;
+
+    background: #fff;
+    color: #111;
+
+    cursor: pointer;
+
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+/* ÍCONE */
+
+.categorias .categoria span {
+    display: block;
+
+    font-size: 26px;
+    line-height: 1;
+}
+
+
+/* NOME */
+
+.categorias .categoria small {
+    display: block;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    line-height: 1.1;
+
+    text-align: center;
+    white-space: nowrap;
+
+    color: inherit;
+}
+
+
+/* CATEGORIA SELECIONADA */
+
+.categorias .categoria.ativa {
+    background: #111;
+    color: #fff;
+
+    border-color: #111;
+
+    box-shadow: none;
+}
+
+
+/* CELULAR */
+
+@media (max-width: 768px) {
+
+    .categorias {
+        padding: 9px 10px;
+        gap: 7px;
+    }
+
+    .categorias .categoria {
+        min-width: 92px;
+        height: 70px;
+
+        padding: 7px 9px;
+
+        border-radius: 9px;
+    }
+
+    .categorias .categoria span {
+        font-size: 23px;
+    }
+
+    .categorias .categoria small {
+        font-size: 11px;
+    }
+}
+
+/* =========================================================
+   NETTINHO LANCHES
+   NOVO CARD HORIZONTAL DE PRODUTOS
+========================================================= */
+
+/* Container dos produtos */
+#productsContainer {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+
+/* Card */
+.produto-card {
+    position: relative;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 150px;
+    grid-template-areas: "info imagem";
+
+    min-height: 165px;
+
+    background: #fff;
+
+    border: 1px solid #e2e2e2;
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.07);
+
+    cursor: pointer;
+}
+
+
+/* Imagem */
+.produto-card .produto-imagem {
+    grid-area: imagem;
+
+    width: 150px;
+    height: 100%;
+
+    min-height: 165px;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+
+/* Informações */
+.produto-card .produto-info {
+    grid-area: info;
+
+    min-width: 0;
+
+    padding: 14px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* Categoria */
+.produto-card .product-category {
+    display: block;
+
+    margin-bottom: 4px;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    color: #777;
+}
+
+
+/* Nome */
+.produto-card .produto-info h3 {
+    margin: 0 0 6px;
+
+    font-size: 20px;
+    line-height: 1.1;
+
+    font-weight: 800;
+
+    color: #111;
+}
+
+
+/* Descrição */
+.produto-card .produto-info p {
+    margin: 0 0 12px;
+
+    font-size: 14px;
+    line-height: 1.35;
+
+    color: #666;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+
+/* Rodapé */
+.produto-card .produto-rodape {
+    margin-top: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 10px;
+}
+
+
+/* Preço */
+.produto-card .produto-preco {
+    font-size: 20px;
+    font-weight: 900;
+
+    color: #111;
+
+    white-space: nowrap;
+}
+
+
+/* Botão */
+.produto-card .btn-produto {
+    min-height: 38px;
+
+    padding: 9px 14px;
+
+    border: 0;
+    border-radius: 8px;
+
+    background: #111;
+    color: #fff;
+
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================================
+   CELULAR
+========================================================= */
+
+@media (max-width: 768px) {
+
+    #productsContainer {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .produto-card {
+        grid-template-columns: minmax(0, 1fr) 120px;
+        grid-template-areas: "info imagem";
+
+        min-height: 145px;
+
+        border-radius: 10px;
+    }
+
+    .produto-card .produto-imagem {
+        width: 120px;
+        height: 100%;
+        min-height: 145px;
+
+        object-fit: cover;
+    }
+
+    .produto-card .produto-info {
+        padding: 12px;
+    }
+
+    .produto-card .product-category {
+        font-size: 11px;
+        margin-bottom: 3px;
+    }
+
+    .produto-card .produto-info h3 {
+        font-size: 17px;
+        margin-bottom: 5px;
+    }
+
+    .produto-card .produto-info p {
+        font-size: 12px;
+        line-height: 1.3;
+
+        margin-bottom: 8px;
+
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+    }
+
+    .produto-card .produto-preco {
+        font-size: 18px;
+    }
+
+    .produto-card .btn-produto {
+        min-height: 34px;
+
+        padding: 7px 10px;
+
+        font-size: 12px;
+
+        border-radius: 7px;
+    }
+}
+
+
+/* Celulares bem pequenos */
+@media (max-width: 380px) {
+
+    .produto-card {
+        grid-template-columns: minmax(0, 1fr) 105px;
+    }
+
+    .produto-card .produto-imagem {
+        width: 105px;
+    }
+
+    .produto-card .produto-info {
+        padding: 10px;
+    }
+
+    .produto-card .produto-info h3 {
+        font-size: 16px;
+    }
+
+    .produto-card .produto-preco {
+        font-size: 16px;
+    }
+
+    .produto-card .btn-produto {
+        padding: 6px 8px;
+        font-size: 11px;
+    }
+}
+
+/* =========================================================
+   AJUSTE DO BOTÃO + ADICIONAR
+========================================================= */
+
+.produto-card .btn-produto {
+    width: auto;
+    min-width: 105px;
+    height: 34px;
+    min-height: 34px;
+
+    padding: 6px 10px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: none;
+    border-radius: 7px;
+
+    background: #111;
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+
+    white-space: nowrap;
+}
+
+
+/* NO CELULAR */
+@media (max-width: 768px) {
+
+    .produto-card .btn-produto {
+        min-width: 92px;
+        height: 32px;
+        min-height: 32px;
+
+        padding: 5px 8px;
+
+        font-size: 11px;
+    }
+}
+
+/* =========================================================
+   CORREÇÃO DO RODAPÉ DO CARD
+   PREÇO + BOTÃO SEM INVADIR A FOTO
+========================================================= */
+
+.produto-card .produto-rodape {
+    margin-top: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-end;
+
+    gap: 7px;
+
+    width: 100%;
+    min-width: 0;
+}
+
+
+/* PREÇO */
+
+.produto-card .produto-preco {
+    display: block;
+
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 900;
+    line-height: 1;
+
+    color: #111;
+
+    white-space: nowrap;
+}
+
+
+/* BOTÃO */
+
+.produto-card .btn-produto {
+    position: static;
+
+    width: 100%;
+    max-width: 125px;
+
+    min-width: 0;
+
+    height: 34px;
+    min-height: 34px;
+
+    margin: 0;
+    padding: 6px 10px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 7px;
+
+    background: #111;
+    color: #fff;
+
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+
+    white-space: nowrap;
+
+    transform: none;
+}
+
+
+/* CELULAR */
+
+@media (max-width: 768px) {
+
+    .produto-card .produto-rodape {
+        gap: 6px;
+    }
+
+    .produto-card .produto-preco {
+        font-size: 18px;
+    }
+
+    .produto-card .btn-produto {
+        width: 100%;
+        max-width: 110px;
+
+        height: 32px;
+        min-height: 32px;
+
+        font-size: 11px;
+    }
+}
+
+/* =========================================================
+   ORGANIZAÇÃO DO CARDÁPIO POR CATEGORIAS
+========================================================= */
+
+.secao-categoria {
+    width: 100%;
+    margin-bottom: 32px;
+}
+
+.titulo-categoria {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin: 0 0 16px;
+    padding: 0 0 10px;
+
+    border-bottom: 2px solid #1f2937;
+
+    font-size: 26px;
+    font-weight: 800;
+}
+
+.produtos-categoria-grid {
+    width: 100%;
+    display: grid !important;
+
+    grid-template-columns:
+        repeat(auto-fill, minmax(340px, 380px));
+
+    gap: 18px;
+
+    justify-content: start;
+    align-items: stretch;
+}
+
+/* =========================================================
+   CATEGORIAS UMA EMBAIXO DA OUTRA
+========================================================= */
+
+#lista-produtos {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 32px;
+}
+
+.secao-categoria {
+    display: block;
+    width: 100% !important;
+    max-width: 100%;
+    margin: 0;
+}
+
+.titulo-categoria {
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.produtos-categoria-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    gap: 16px;
+}
+
+/* =========================================================
+   ACABAMENTO DO CARDÁPIO POR CATEGORIAS
+========================================================= */
+
+#lista-produtos {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 40px;
+}
+
+/* Cada categoria ocupa uma linha completa */
+.secao-categoria {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+}
+
+/* Título de cada categoria */
+.titulo-categoria {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin: 0 0 18px;
+    padding: 0 0 10px;
+
+    border-bottom: 2px solid #1f2937;
+
+    font-size: 24px;
+    font-weight: 800;
+}
+
+/* Produtos dentro de cada categoria */
+.produtos-categoria-grid {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+    align-items: stretch;
+}
+
+/* Tablet */
+@media (max-width: 900px) {
+    .produtos-categoria-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .titulo-categoria {
+        font-size: 22px;
+    }
+}
+
+/* Celular */
+@media (max-width: 600px) {
+    #lista-produtos {
+        gap: 30px;
+    }
+
+    .produtos-categoria-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .titulo-categoria {
+        font-size: 20px;
+        margin-bottom: 14px;
+    }
+}
+
+/* =========================================================
+   PADRONIZAÇÃO DOS CARDS DO CARDÁPIO
+========================================================= */
+
+.produtos-categoria-grid .produto-card {
+    width: 100%;
+    min-height: 220px;
+
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 170px;
+
+    background: #ffffff;
+    border-radius: 14px;
+    overflow: hidden;
+
+    align-items: stretch;
+}
+
+/* Informações do produto */
+.produtos-categoria-grid .produto-info {
+    padding: 16px;
+
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+}
+
+/* Categoria pequena */
+.produtos-categoria-grid .product-category {
+    font-size: 12px;
+    margin-bottom: 5px;
+}
+
+/* Nome */
+.produtos-categoria-grid .produto-info h3 {
+    font-size: 20px;
+    line-height: 1.15;
+    margin: 0 0 8px;
+}
+
+/* Descrição */
+.produtos-categoria-grid .produto-info p {
+    font-size: 14px;
+    line-height: 1.4;
+
+    margin: 0 0 12px;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Preço + botão ficam na parte inferior */
+.produtos-categoria-grid .produto-rodape {
+    margin-top: auto;
+
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    gap: 10px;
+}
+
+/* Preço */
+.produtos-categoria-grid .produto-preco {
+    font-size: 22px;
+    font-weight: 800;
+}
+
+/* Botão */
+.produtos-categoria-grid .btn-produto {
+    min-height: 42px;
+    padding: 10px 16px;
+    border-radius: 8px;
+}
+
+/* Imagem sempre do mesmo tamanho */
+.produtos-categoria-grid .produto-imagem {
+    width: 170px;
+    height: 100%;
+
+    min-height: 220px;
+
+    object-fit: cover;
+    display: block;
+}
+
+/* =========================================================
+   AJUSTE FINAL DOS CARDS - DESKTOP
+========================================================= */
+
+.produtos-categoria-grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 20px !important;
+    width: 100% !important;
+}
+
+.produto-card {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 48% !important;
+
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+
+    overflow: hidden !important;
+    box-sizing: border-box !important;
+
+    border-radius: 14px;
+    background: #fff;
+}
+
+.produto-info {
+    min-width: 0 !important;
+    width: 100% !important;
+    padding: 18px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+}
+
+.produto-info h3 {
+    margin: 5px 0 8px !important;
+
+    font-size: 22px !important;
+    line-height: 1.1 !important;
+
+    overflow-wrap: break-word !important;
+    word-break: normal !important;
+}
+
+.produto-info p {
+    margin: 0 0 12px !important;
+
+    font-size: 15px !important;
+    line-height: 1.4 !important;
+
+    overflow: hidden !important;
+
+    display: -webkit-box !important;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.produto-imagem {
+    width: 100% !important;
+    height: 100% !important;
+    min-width: 0 !important;
+
+    object-fit: cover !important;
+    display: block !important;
+}
+
+.produto-rodape {
+    margin-top: auto !important;
+}
+
+.produto-preco {
+    display: block !important;
+    margin-bottom: 10px !important;
+    white-space: nowrap !important;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+
+    .produtos-categoria-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .produto-card {
+        grid-template-columns: minmax(0, 1fr) 45% !important;
+    }
+
+    .produto-info {
+        padding: 12px !important;
+    }
+
+    .produto-info h3 {
+        font-size: 18px !important;
+    }
+
+    .produto-info p {
+        font-size: 13px !important;
+    }
+}
+
+/* =========================================================
+   ACABAMENTO FINAL DOS CARDS
+========================================================= */
+
+/* Todos os cards com altura padronizada */
+.produto-card {
+    min-height: 330px !important;
+    align-items: stretch !important;
+}
+
+/* Área das informações */
+.produto-info {
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100% !important;
+}
+
+/* Nome do produto */
+.produto-info h3 {
+    min-height: 48px;
+}
+
+/* Descrição ocupa espaço controlado */
+.produto-info p {
+    min-height: 63px;
+    max-height: 63px;
+}
+
+/* Preço + botão ficam alinhados na parte inferior */
+.produto-rodape {
+    margin-top: auto !important;
+    padding-top: 12px;
+}
+
+/* Imagem sempre ocupa a mesma área */
+.produto-imagem {
+    width: 100% !important;
+    height: 330px !important;
+    object-fit: cover !important;
+    object-position: center !important;
+}
+
+/* Botão padronizado */
+.btn-produto {
+    min-height: 44px;
+    padding: 10px 16px !important;
+    white-space: nowrap;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 768px) {
+
+    .produto-card {
+        min-height: 250px !important;
+    }
+
+    .produto-imagem {
+        height: 250px !important;
+    }
+
+    .produto-info h3 {
+        min-height: auto;
+    }
+
+    .produto-info p {
+        min-height: 54px;
+        max-height: 54px;
+    }
+
+    /* ACABAMENTO DOS CARDS NO CELULAR */
+
+    .produtos-categoria-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .produto-card {
+        width: 100% !important;
+        min-height: 200px !important;
+        display: grid !important;
+        grid-template-columns: 55% 45% !important;
+        align-items: stretch !important;
+        overflow: hidden;
+    }
+
+    .produto-info {
+        padding: 14px !important;
+        min-width: 0;
+    }
+
+    .produto-imagem {
+        width: 100% !important;
+        height: 200px !important;
+        object-fit: cover !important;
+    }
+
+    .produto-info h3 {
+        font-size: 18px !important;
+        line-height: 1.15;
+    }
+
+    .produto-info p {
+        font-size: 14px !important;
+        line-height: 1.35;
+        min-height: auto !important;
+        max-height: 58px !important;
+        overflow: hidden;
+    }
+
+    .produto-preco {
+        font-size: 20px !important;
+    }
+
+    /* =========================================
+   MENU DE CATEGORIAS - MOBILE
+========================================= */
+
+    .categories-menu {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+
+        gap: 8px !important;
+
+        width: 100% !important;
+
+        padding: 8px 10px 12px !important;
+
+        scroll-behavior: smooth;
+        -webkit-overflow-scrolling: touch;
+
+        scrollbar-width: none;
+    }
+
+    .categories-menu::-webkit-scrollbar {
+        display: none;
+    }
+
+    .categories-menu .categoria {
+        flex: 0 0 78px !important;
+        min-width: 78px !important;
+        width: 78px !important;
+
+        padding: 8px 4px !important;
+        gap: 4px !important;
+    }
+
+    .categories-menu .categoria .icone {
+        font-size: 24px !important;
+    }
+
+    .categories-menu .categoria span {
+        font-size: 10px !important;
+        line-height: 1.1 !important;
+        white-space: nowrap;
+    }
+}

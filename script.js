@@ -1502,6 +1502,14 @@ function renderProducts() {
             getFilteredProducts()
         );
 
+    /* Se estiver em TODOS, mostra o cardápio completo por categorias */
+    if (currentCategory === "todos") {
+        renderizarCardapioPorCategorias(
+            sortProducts(products)
+        );
+        return;
+    }
+
     productsContainer.innerHTML =
         "";
 
@@ -1535,6 +1543,56 @@ function renderProducts() {
     );
 }
 
+/* =========================================================
+   CARDÁPIO AGRUPADO POR CATEGORIAS
+========================================================= */
+
+function renderizarCardapioPorCategorias(listaProdutos) {
+
+    productsContainer.innerHTML = "";
+
+    categories.forEach(category => {
+
+        const produtosDaCategoria = listaProdutos.filter(
+            product => product.category === category.slug
+        );
+
+        if (produtosDaCategoria.length === 0) {
+            return;
+        }
+
+        const section = document.createElement("section");
+
+        section.className = "secao-categoria";
+        section.dataset.category = category.slug;
+        section.id = `categoria-${category.slug}`;
+
+        const titulo = document.createElement("h2");
+
+        titulo.className = "titulo-categoria";
+
+        titulo.innerHTML = `
+            <span>${escapeHTML(category.icon || "🍔")}</span>
+            ${escapeHTML((category.name || "").toUpperCase())}
+        `;
+
+        section.appendChild(titulo);
+
+        const grid = document.createElement("div");
+        grid.className = "produtos-categoria-grid";
+
+        produtosDaCategoria.forEach(product => {
+            grid.appendChild(
+                criarCardProduto(product)
+            );
+        });
+
+        section.appendChild(grid);
+
+        productsContainer.appendChild(section);
+    });
+}
+
 
 /* =========================================================
    FILTRAR CATEGORIA
@@ -1542,27 +1600,177 @@ function renderProducts() {
 
 function filtrarCategoria(category) {
 
-    currentCategory =
-        category;
-
     const buttons =
-        categoriesMenu.querySelectorAll(
-            ".categoria"
-        );
+        categoriesMenu.querySelectorAll(".categoria");
 
-    buttons.forEach(button => {
+    // Se clicar em TODOS
+    if (category === "todos") {
 
-        const buttonCategory =
-            button.dataset.category;
+        currentCategory = "todos";
 
-        button.classList.toggle(
-            "ativa",
-            buttonCategory === category
-        );
-    });
+        buttons.forEach(button => {
+            button.classList.toggle(
+                "ativa",
+                button.dataset.category === "todos"
+            );
+        });
+
+        renderProducts();
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        return;
+    }
+
+    // Mantém o cardápio completo renderizado
+    currentCategory = "todos";
 
     renderProducts();
+
+    requestAnimationFrame(() => {
+
+        const section =
+            document.getElementById(
+                `categoria-${category}`
+            );
+
+        if (!section) return;
+
+        // Marca a categoria clicada como ativa
+        buttons.forEach(button => {
+            button.classList.toggle(
+                "ativa",
+                button.dataset.category === category
+            );
+        });
+
+        // Faz o próprio menu horizontal acompanhar
+        const activeButton =
+            categoriesMenu.querySelector(
+                `.categoria[data-category="${category}"]`
+            );
+
+        activeButton?.scrollIntoView({
+            behavior: "smooth",
+            inline: "center",
+            block: "nearest"
+        });
+
+        // Altura do menu para não esconder o título
+        const menuHeight =
+            categoriesMenu?.offsetHeight || 0;
+
+        const top =
+            section.getBoundingClientRect().top +
+            window.scrollY -
+            menuHeight -
+            15;
+
+        window.scrollTo({
+            top,
+            behavior: "smooth"
+        });
+
+    });
 }
+
+/* =========================================================
+   CATEGORIA ATIVA AUTOMATICAMENTE AO ROLAR
+========================================================= */
+
+let atualizandoCategoriaPeloScroll = false;
+
+function atualizarCategoriaPeloScroll() {
+
+    if (atualizandoCategoriaPeloScroll) return;
+
+    atualizandoCategoriaPeloScroll = true;
+
+    requestAnimationFrame(() => {
+
+        const secoes =
+            document.querySelectorAll(".secao-categoria");
+
+        if (!secoes.length) {
+            atualizandoCategoriaPeloScroll = false;
+            return;
+        }
+
+        const menuHeight =
+            categoriesMenu?.offsetHeight || 0;
+
+        const pontoReferencia =
+            menuHeight + 100;
+
+        let categoriaAtual = null;
+
+        secoes.forEach(section => {
+
+            const rect =
+                section.getBoundingClientRect();
+
+            if (rect.top <= pontoReferencia) {
+                categoriaAtual =
+                    section.dataset.category;
+            }
+
+        });
+
+        if (categoriaAtual) {
+
+            const buttons =
+                categoriesMenu.querySelectorAll(".categoria");
+
+            buttons.forEach(button => {
+
+                button.classList.toggle(
+                    "ativa",
+                    button.dataset.category === categoriaAtual
+                );
+
+            });
+
+            const activeButton =
+                categoriesMenu.querySelector(
+                    `.categoria[data-category="${categoriaAtual}"]`
+                );
+
+            if (activeButton) {
+
+                const menuRect =
+                    categoriesMenu.getBoundingClientRect();
+
+                const buttonRect =
+                    activeButton.getBoundingClientRect();
+
+                if (
+                    buttonRect.left < menuRect.left ||
+                    buttonRect.right > menuRect.right
+                ) {
+
+                    activeButton.scrollIntoView({
+                        behavior: "smooth",
+                        inline: "center",
+                        block: "nearest"
+                    });
+
+                }
+            }
+        }
+
+        atualizandoCategoriaPeloScroll = false;
+
+    });
+}
+
+window.addEventListener(
+    "scroll",
+    atualizarCategoriaPeloScroll,
+    { passive: true }
+);
 
 /* =========================================================
    BUSCA
