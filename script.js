@@ -725,19 +725,29 @@ async function carregarConfiguracoesLoja() {
     ) {
 
         storeLogoContainer.innerHTML = `
-    <img
-        src="${escapeHTML(
+        <img
+            src="${escapeHTML(
             data.logo_url || ""
         )}"
-        alt="${escapeHTML(
+            alt="${escapeHTML(
             data.store_name || "Logo da loja"
         )}"
-        class="store-logo-image"
-    >
-`;
+            class="store-logo-image"
+        >
+    `;
 
+        // Atualiza o favicon com a logo da loja
+        let favicon =
+            document.querySelector('link[rel="icon"]');
+
+        if (!favicon) {
+            favicon = document.createElement("link");
+            favicon.rel = "icon";
+            document.head.appendChild(favicon);
+        }
+
+        favicon.href = data.logo_url;
     }
-
     return true;
 }
 
