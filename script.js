@@ -1603,6 +1603,9 @@ function filtrarCategoria(category) {
     const buttons =
         categoriesMenu.querySelectorAll(".categoria");
 
+    // Impede o scroll automático de disputar com o clique
+    atualizandoCategoriaPeloScroll = true;
+
     // Se clicar em TODOS
     if (category === "todos") {
 
@@ -1622,6 +1625,10 @@ function filtrarCategoria(category) {
             behavior: "smooth"
         });
 
+        setTimeout(() => {
+            atualizandoCategoriaPeloScroll = false;
+        }, 700);
+
         return;
     }
 
@@ -1637,9 +1644,12 @@ function filtrarCategoria(category) {
                 `categoria-${category}`
             );
 
-        if (!section) return;
+        if (!section) {
+            atualizandoCategoriaPeloScroll = false;
+            return;
+        }
 
-        // Marca a categoria clicada como ativa
+        // Marca exatamente a categoria clicada
         buttons.forEach(button => {
             button.classList.toggle(
                 "ativa",
@@ -1647,11 +1657,13 @@ function filtrarCategoria(category) {
             );
         });
 
-        // Faz o próprio menu horizontal acompanhar
+        // Localiza o botão sem montar seletor CSS
         const activeButton =
-            categoriesMenu.querySelector(
-                `.categoria[data-category="${category}"]`
-            );
+            [...categoriesMenu.querySelectorAll(".categoria")]
+                .find(
+                    button =>
+                        button.dataset.category === category
+                );
 
         activeButton?.scrollIntoView({
             behavior: "smooth",
@@ -1674,9 +1686,14 @@ function filtrarCategoria(category) {
             behavior: "smooth"
         });
 
+        // Libera novamente o acompanhamento automático
+        setTimeout(() => {
+            atualizandoCategoriaPeloScroll = false;
+            atualizarCategoriaPeloScroll();
+        }, 700);
+
     });
 }
-
 /* =========================================================
    CATEGORIA ATIVA AUTOMATICAMENTE AO ROLAR
 ========================================================= */
