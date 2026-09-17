@@ -1703,7 +1703,7 @@ function atualizarCategoriaPeloScroll() {
             categoriesMenu?.offsetHeight || 0;
 
         const pontoReferencia =
-            menuHeight + 100;
+            menuHeight + 30;
 
         let categoriaAtual = null;
 
@@ -1719,6 +1719,16 @@ function atualizarCategoriaPeloScroll() {
 
         });
 
+        // Se chegou ao final da página, ativa a última categoria
+        const chegouNoFinal =
+            window.innerHeight + window.scrollY >=
+            document.documentElement.scrollHeight - 150;
+
+        if (chegouNoFinal && secoes.length) {
+            categoriaAtual =
+                secoes[secoes.length - 1].dataset.category;
+        }
+
         if (categoriaAtual) {
 
             const buttons =
@@ -1733,10 +1743,8 @@ function atualizarCategoriaPeloScroll() {
 
             });
 
-            const activeButton =
-                categoriesMenu.querySelector(
-                    `.categoria[data-category="${categoriaAtual}"]`
-                );
+            const activeButton = [...categoriesMenu.querySelectorAll(".categoria")]
+                .find(button => button.dataset.category === categoriaAtual);
 
             if (activeButton) {
 
