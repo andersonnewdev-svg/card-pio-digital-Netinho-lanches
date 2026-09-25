@@ -664,10 +664,14 @@ async function carregarConfiguracoesLoja() {
             data?.whatsapp ||
             ""
         )
-            .replace(
-                /\D/g,
-                ""
-            );
+            .replace(/\D/g, "");
+
+    if (
+        WHATSAPP_NUMBER.length === 11
+    ) {
+        WHATSAPP_NUMBER =
+            `55${WHATSAPP_NUMBER}`;
+    }
 
     /* =========================================
        APLICAR IDENTIDADE VISUAL DA LOJA
