@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Painel SaaS | Administração</title>
+
+    <link rel="stylesheet" href="saas-admin.css">
+</head>
+
+<body>
+
+    <!-- =========================================
+         TELA DE CARREGAMENTO
+    ========================================== -->
+
+    <div id="loadingScreen" class="loading-screen">
+        <h2>Carregando painel...</h2>
+    </div>
+
+
+    <!-- =========================================
+         ACESSO NEGADO
+    ========================================== -->
+
+    <div id="accessDenied" class="access-denied hidden">
+        <h1>Acesso não autorizado</h1>
+
+        <p>
+            Esta área é exclusiva para
+            administradores da plataforma.
+        </p>
+    </div>
+
+
+    <!-- =========================================
+         PAINEL SAAS
+    ========================================== -->
+
+    <div id="saasPanel" class="app hidden">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="brand">
+                <h2>Menu SaaS</h2>
+                <span>Administração</span>
+            </div>
+
+            <nav class="menu">
+
+                <button class="menu-item active" data-section="dashboard">
+                    Dashboard
+                </button>
+
+                <button class="menu-item" data-section="stores">
+                    Lojas
+                </button>
+
+                <button class="menu-item" data-section="subscriptions">
+                    Assinaturas
+                </button>
+
+            </nav>
+
+            <button id="logoutButton" class="logout-button">
+                Sair
+            </button>
+
+        </aside>
+
+
+        <!-- CONTEÚDO -->
+
+        <main class="main-content">
+
+            <header class="topbar">
+
+                <div>
+                    <h1>Painel SaaS</h1>
+
+                    <p>
+                        Gerenciamento da plataforma
+                    </p>
+                </div>
+
+                <div class="admin-info">
+
+                    <span>Administrador</span>
+
+                    <strong id="adminEmail">
+                        -
+                    </strong>
+
+                </div>
+
+            </header>
+
+
+            <!-- =================================
+                 DASHBOARD
+            ================================== -->
+
+            <section id="dashboardSection" class="page-section active">
+
+                <div class="section-header">
+                    <h2>Visão geral</h2>
+
+                    <p>
+                        Acompanhe as lojas e
+                        assinaturas da plataforma.
+                    </p>
+                </div>
+
+
+                <div class="stats-grid">
+
+                    <article class="stat-card">
+                        <span>Total de lojas</span>
+
+                        <strong id="totalStores">
+                            0
+                        </strong>
+                    </article>
+
+
+                    <article class="stat-card">
+                        <span>Em teste</span>
+
+                        <strong id="trialStores">
+                            0
+                        </strong>
+                    </article>
+
+
+                    <article class="stat-card">
+                        <span>Ativas</span>
+
+                        <strong id="activeStores">
+                            0
+                        </strong>
+                    </article>
+
+
+                    <article class="stat-card">
+                        <span>Bloqueadas</span>
+
+                        <strong id="blockedStores">
+                            0
+                        </strong>
+                    </article>
+
+                    <article class="stat-card">
+                        <span>Expiradas</span>
+
+                        <strong id="expiredStores">
+                            0
+                        </strong>
+                    </article>
+
+                </div>
+
+
+                <div class="panel-card">
+
+                    <div class="panel-title">
+                        <h3>Lojas recentes</h3>
+                    </div>
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Loja</th>
+                                    <th>Plano</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="recentStoresTable">
+
+                                <tr>
+                                    <td colspan="3">
+                                        Carregando...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 LOJAS
+            ================================== -->
+
+            <section id="storesSection" class="page-section">
+
+                <div class="section-header">
+                    <h2>Lojas</h2>
+
+                    <p>
+                        Visualize as lojas cadastradas
+                        na plataforma.
+                    </p>
+                </div>
+
+
+                <div class="panel-card">
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Loja</th>
+                                    <th>WhatsApp</th>
+                                    <th>Slug</th>
+                                    <th>Plano</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="storesTable">
+
+                                <tr>
+                                    <td colspan="6">
+                                        Carregando...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- =================================
+                 ASSINATURAS
+            ================================== -->
+
+            <section id="subscriptionsSection" class="page-section">
+
+                <div class="section-header">
+                    <h2>Assinaturas</h2>
+
+                    <p>
+                        Gerencie os planos e status
+                        das lojas.
+                    </p>
+                </div>
+
+
+                <div class="panel-card">
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>Loja</th>
+                                    <th>Plano</th>
+                                    <th>Status</th>
+                                    <th>Fim do teste</th>
+                                    <th>Vencimento</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="subscriptionsTable">
+
+                                <tr>
+                                    <td colspan="5">
+                                        Carregando...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- ================================
+     MODAL - GERENCIAR LOJA
+================================= -->
+
+    <div id="storeModal" class="store-modal hidden">
+
+        <div class="store-modal-content">
+
+            <div class="store-modal-header">
+                <h2>Gerenciar Loja</h2>
+
+                <button id="closeStoreModal" type="button" class="store-modal-close">
+                    ×
+                </button>
+            </div>
+
+            <div class="store-modal-body">
+
+                <p>
+                    <strong>Loja:</strong>
+                    <span id="modalStoreName">-</span>
+                </p>
+
+                <p>
+                    <strong>WhatsApp:</strong>
+                    <span id="modalStoreWhatsapp">-</span>
+                </p>
+
+                <p>
+                    <strong>Slug:</strong>
+                    <span id="modalStoreSlug">-</span>
+                </p>
+
+                <p>
+                    <strong>Plano:</strong>
+                    <span id="modalStorePlan">-</span>
+                </p>
+
+                <p>
+                    <strong>Status:</strong>
+                    <span id="modalStoreStatus">-</span>
+                </p>
+
+                <p>
+                    <strong>Fim do teste:</strong>
+                    <span id="modalTrialEnd">-</span>
+                </p>
+
+                <p>
+                    <strong>Vencimento:</strong>
+                    <span id="modalSubscriptionEnd">-</span>
+                </p>
+
+                <div class="modal-plan-selection">
+                    <label for="subscriptionPlan">
+                        <strong>Selecionar plano:</strong>
+                    </label>
+
+                    <select id="subscriptionPlan">
+                        <option value="basic">Plano Básico</option>
+                        <option value="pro">Plano Pro</option>
+                    </select>
+                </div>
+
+                <div class="modal-actions">
+
+                    <button id="blockStoreButton" type="button">
+                        Bloquear Loja
+                    </button>
+
+                    <button id="unblockStoreButton" type="button">
+                        Desbloquear Loja
+                    </button>
+
+                    <button id="activateSubscriptionButton" type="button">
+                        Ativar Assinatura
+                    </button>
+
+                    <button id="changePlanButton" type="button">
+                        Alterar Plano
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================
+         SUPABASE
+    ========================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config/supabase.js"></script>
+
+    <script src="saas-admin.js"></script>
+
+
+
+</body>
+
+</html>

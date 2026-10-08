@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Login | Painel SaaS</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0f172a;
+            font-family: Arial, sans-serif;
+        }
+
+        .login-container {
+            width: 90%;
+            max-width: 400px;
+            padding: 35px;
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 10px 30px #0003;
+            text-align: center;
+        }
+
+        h1 {
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+
+        p {
+            color: #64748b;
+            margin-bottom: 25px;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px;
+            margin-bottom: 15px;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font-size: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            background: #2563eb;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        #loginError {
+            color: #dc2626;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="login-container">
+
+        <h1>Painel SaaS</h1>
+
+        <p>Administração da Plataforma</p>
+
+        <form id="saasLoginForm">
+
+            <input type="email" id="email" placeholder="E-mail do administrador" autocomplete="username" required>
+
+            <input type="password" id="password" placeholder="Senha" autocomplete="current-password" required>
+
+            <button type="submit">
+                Entrar no SaaS
+            </button>
+
+        </form>
+
+        <p id="loginError" role="alert"></p>
+
+    </div>
+
+    <!-- CONEXÃO COM SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="config/supabase.js"></script>
+
+    <!-- AUTENTICAÇÃO DO SAAS -->
+    <script src="saas-login.js"></script>
+
+</body>
+
+</html>
