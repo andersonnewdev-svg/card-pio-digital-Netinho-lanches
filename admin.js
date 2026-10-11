@@ -1502,8 +1502,7 @@ storeSettingsForm?.addEventListener(
 
             if (!error) {
 
-                id =
-                    novaLoja.id;
+                id = novaLoja.id;
 
                 currentStoreSettingsId =
                     novaLoja.id;
@@ -1537,6 +1536,8 @@ storeSettingsForm?.addEventListener(
                         logoError
                     );
                 }
+
+
             }
 
         } else {

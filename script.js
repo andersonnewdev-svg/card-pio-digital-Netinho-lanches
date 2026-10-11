@@ -653,6 +653,140 @@ async function carregarConfiguracoesLoja() {
         return false;
     }
 
+    const {
+        data: subscription,
+        error: subscriptionError
+    } = await supabaseClient
+        .from("subscriptions")
+        .select("*")
+        .eq("store_id", data.id)
+        .maybeSingle();
+
+    if (subscription?.status === "overdue") {
+
+        console.warn(
+            "Assinatura vencida:",
+            data.store_name
+        );
+
+        document.body.innerHTML = `
+        <main style="
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        ">
+            <div>
+              <h1>Assinatura vencida</h1>
+
+<p>
+    Este cardápio está temporariamente indisponível.
+</p>
+            </div>
+        </main>
+    `;
+
+        return false;
+    }
+
+    if (
+        subscription?.status === "trial" &&
+        subscription?.trial_ends_at
+    ) {
+
+        const trialEndsAt =
+            new Date(subscription.trial_ends_at);
+
+        const now =
+            new Date();
+
+        const trialExpired =
+            now > trialEndsAt;
+
+        console.log(
+            "Verificação do período de teste:",
+            {
+                trialEndsAt,
+                now,
+                trialExpired
+            }
+        );
+
+        if (trialExpired) {
+
+            console.warn(
+                "Período de teste expirado:",
+                data.store_name
+            );
+
+
+            document.body.innerHTML = `
+        <main style="
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        ">
+            <div>
+                <h1>Período de teste encerrado</h1>
+
+                <p>
+                    O período de teste deste cardápio terminou.
+                </p>
+            </div>
+        </main>
+    `;
+
+            return false;
+        }
+    }
+
+    console.log(
+        "Assinatura da loja:",
+        subscription
+    );
+
+    if (subscriptionError) {
+        console.error(
+            "Erro ao consultar assinatura:",
+            subscriptionError
+        );
+    }
+
+    if (subscription?.status === "blocked") {
+
+        console.warn(
+            "Loja bloqueada pelo painel SaaS:",
+            data.store_name
+        );
+
+        document.body.innerHTML = `
+        <main style="
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        ">
+            <div>
+                <h1>Loja temporariamente indisponível</h1>
+
+                <p>
+                    Este cardápio está temporariamente
+                    indisponível.
+                </p>
+            </div>
+        </main>
+    `;
+
+        return false;
+    }
+
     storeSettings =
         data;
 
@@ -3960,6 +4094,8 @@ async function iniciarCardapio() {
             console.warn(
                 "Configurações da loja não foram carregadas."
             );
+
+            return;
         }
 
         if (configuracoesCarregadas) {
