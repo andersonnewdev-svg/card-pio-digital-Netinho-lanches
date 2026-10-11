@@ -2103,6 +2103,30 @@ function renderModalAdicionais(
         return;
     }
 
+    // Categorias que não permitem adicionais
+    const categoriasSemAdicionais = [
+        "bebidas",
+        "refrigerante-e-agua",
+        "suco",
+        "sucos",
+        "vitamina",
+        "vitaminas",
+        "batata-frita",
+    ];
+
+    if (
+        categoriasSemAdicionais.includes(
+            (product.category || "").trim().toLowerCase()
+        )
+    ) {
+        modalAdicionais.innerHTML = "";
+        modalAdicionais.style.display = "none";
+        return;
+    }
+
+    // Exibe os adicionais nas demais categorias
+    modalAdicionais.style.display = "";
+
     modalAdicionais.innerHTML = `
         <h3>
             Adicionais
