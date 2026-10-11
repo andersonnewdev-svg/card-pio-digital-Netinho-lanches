@@ -387,6 +387,16 @@ function mostrarPainel() {
                 selectedStore = store;
                 selectedSubscription = subscription || null;
 
+                const seletorPlano =
+                    document.getElementById("subscriptionPlan");
+
+                if (seletorPlano) {
+                    seletorPlano.value =
+                        selectedSubscription?.plan === "pro"
+                            ? "pro"
+                            : "basic";
+                }
+
                 const botaoAlterarPlanoModal =
                     document.getElementById("changePlanButton");
 
