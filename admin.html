@@ -649,6 +649,50 @@
 
             </section>
 
+            <!-- ========================================
+     GERENCIAMENTO DE MESAS
+======================================== -->
+
+            <section class="admin-section" id="tablesSection">
+
+                <div class="admin-section-header">
+                    <div>
+                        <h2>Gerenciar Mesas</h2>
+                        <p>Cadastre e acompanhe as mesas do restaurante.</p>
+                    </div>
+                </div>
+
+                <div class="tables-actions">
+                    <button type="button" id="addTableButton" class="primary-button">
+                        + Nova Mesa
+                    </button>
+                </div>
+
+                <div id="tablesList" class="tables-list">
+                    <p>Nenhuma mesa carregada.</p>
+                </div>
+
+            </section>
+
+            <!-- ==========================================
+     HISTÓRICO DE CONTAS FECHADAS
+========================================== -->
+
+            <section class="admin-section" id="tableHistorySection">
+
+                <div class="admin-section-header">
+                    <div>
+                        <h2>Histórico de Contas</h2>
+                        <p>Consulte os atendimentos e pagamentos realizados nas mesas.</p>
+                    </div>
+                </div>
+
+                <div id="tableHistoryList" class="tables-list">
+                    <p>Nenhuma conta carregada.</p>
+                </div>
+
+            </section>
+
             <section class="admin-section" id="categoriesSection">
 
                 <div class="admin-section-header">
@@ -893,6 +937,25 @@
     <script src="config/supabase.js"></script>
 
     <script src="admin.js"></script>
+
+    <!-- MODAL DE DETALHES DA CONTA -->
+    <div id="modalDetalhesConta" class="modal-detalhes-conta" hidden>
+
+        <div class="modal-detalhes-conteudo">
+
+            <div class="modal-detalhes-cabecalho">
+                <h2>Detalhes da Conta</h2>
+
+                <button type="button" id="fecharDetalhesConta" aria-label="Fechar detalhes">
+                    &times;
+                </button>
+            </div>
+
+            <div id="conteudoDetalhesConta"></div>
+
+        </div>
+
+    </div>
 
 
 </body>

@@ -1,0 +1,366 @@
+/* =========================================
+   SAAS - PAINEL DO GARÇOM
+   ESTILO RESPONSIVO
+========================================= */
+
+:root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --background: #f3f6fb;
+    --white: #ffffff;
+    --text: #1f2937;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --success: #16a34a;
+    --danger: #dc2626;
+    --radius: 14px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background: var(--background);
+    color: var(--text);
+    min-height: 100vh;
+}
+
+/* CABEÇALHO */
+
+.garcom-header {
+    background: linear-gradient(135deg,
+            #1d4ed8,
+            #2563eb);
+    color: var(--white);
+    padding: 28px 20px;
+    text-align: center;
+}
+
+.garcom-header h1 {
+    font-size: 26px;
+    margin-bottom: 8px;
+}
+
+.garcom-header p {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* CONTEÚDO */
+
+.garcom-container {
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 0 16px;
+}
+
+.garcom-section {
+    background: var(--white);
+    padding: 24px;
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+}
+
+.garcom-section h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+}
+
+/* MESAS */
+
+.mesas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,
+            minmax(160px, 1fr));
+    gap: 16px;
+}
+
+.mesa-card {
+    padding: 22px 16px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+    background: var(--white);
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.mesa-card:hover {
+    transform: translateY(-3px);
+    border-color: var(--primary);
+}
+
+.mesa-card h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.mesa-card p {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.mesa-livre {
+    border-color: var(--success);
+}
+
+.mesa-livre p {
+    color: var(--success);
+}
+
+.mesa-ocupada {
+    border-color: var(--danger);
+}
+
+.mesa-ocupada p {
+    color: var(--danger);
+}
+
+.mesa-desativada {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.mesa-selecionada {
+    background: #eff6ff;
+    border-color: var(--primary);
+}
+
+/* FORMULÁRIO */
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin: 16px 0 8px;
+}
+
+input {
+    width: 100%;
+    padding: 13px;
+    border: 1px solid var(--border);
+    border-radius: 9px;
+    font-size: 16px;
+    outline: none;
+}
+
+input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* BOTÕES */
+
+button {
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    border-radius: 9px;
+    padding: 13px 20px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+#abrirAtendimento,
+#enviarPedido {
+    width: 100%;
+    background: var(--primary);
+    color: var(--white);
+    margin-top: 20px;
+}
+
+#abrirAtendimento:hover,
+#enviarPedido:hover {
+    background: var(--primary-dark);
+}
+
+/* PRODUTOS */
+
+#listaProdutos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill,
+            minmax(220px, 1fr));
+    gap: 16px;
+}
+
+.produto-card {
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    background: var(--white);
+}
+
+.produto-card h3 {
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.produto-card p {
+    color: var(--muted);
+    font-size: 14px;
+    margin-bottom: 12px;
+}
+
+.produto-card button {
+    background: var(--primary);
+    color: var(--white);
+    width: 100%;
+}
+
+/* PEDIDO */
+
+#itensPedido {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pedido-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+#totalPedido {
+    color: var(--success);
+    font-size: 20px;
+}
+
+#secaoPedido>p {
+    margin-top: 20px;
+    text-align: right;
+}
+
+/* ACESSIBILIDADE */
+
+button:focus-visible,
+.mesa-card:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 3px;
+}
+
+/* ELEMENTOS OCULTOS */
+
+[hidden] {
+    display: none !important;
+}
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 600px) {
+
+    .garcom-header {
+        padding: 22px 16px;
+    }
+
+    .garcom-header h1 {
+        font-size: 22px;
+    }
+
+    .garcom-container {
+        margin: 18px auto;
+        padding: 0 12px;
+    }
+
+    .garcom-section {
+        padding: 18px;
+        margin-bottom: 16px;
+    }
+
+    .garcom-section h2 {
+        font-size: 18px;
+    }
+
+    .mesas-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .mesa-card {
+        padding: 18px 10px;
+    }
+
+    #listaProdutos {
+        grid-template-columns: 1fr;
+    }
+
+    .pedido-item {
+        flex-wrap: wrap;
+    }
+}
+
+/* =========================================
+   PAINEL DO GARÇOM - MESAS
+========================================= */
+
+.waiter-tables-section {
+    margin-top: 30px;
+}
+
+.waiter-tables-list {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fill, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.waiter-table-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s;
+}
+
+.waiter-table-card:hover {
+    transform: translateY(-3px);
+}
+
+.waiter-table-card h3 {
+    margin: 0 0 12px;
+    font-size: 20px;
+    color: #1f2937;
+}
+
+.waiter-table-card p {
+    margin-bottom: 15px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.waiter-table-card button {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    background: #16a34a;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.waiter-table-card button:hover {
+    background: #15803d;
+}
+
+@media (max-width: 600px) {
+    .waiter-tables-list {
+        grid-template-columns: 1fr;
+    }
+}

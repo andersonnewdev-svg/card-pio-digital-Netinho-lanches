@@ -1456,3 +1456,229 @@ body {
 .notificacao-admin.aviso {
     border-left: 5px solid #f59e0b;
 }
+
+/* ========================================
+   GERENCIAMENTO DE MESAS
+======================================== */
+
+.tables-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+.table-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 5px solid #2563eb;
+    min-height: 150px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    transition: transform 0.2s;
+}
+
+.table-card:hover {
+    transform: translateY(-3px);
+}
+
+/* Mesa livre */
+.table-card:has(.table-status-free) {
+    border-left-color: #16a34a;
+}
+
+/* Mesa ocupada */
+.table-card:has(.table-status-occupied) {
+    border-left-color: #dc2626;
+}
+
+.table-status-free {
+    color: #16a34a;
+    font-weight: 700;
+}
+
+.table-status-occupied {
+    color: #dc2626;
+    font-weight: 700;
+}
+
+.table-card h3 {
+    font-size: 20px;
+    margin: 0 0 10px;
+    color: #1f2937;
+}
+
+.table-card p {
+    font-size: 14px;
+    font-weight: 600;
+    color: #16a34a;
+    margin: 0;
+}
+
+.tables-actions {
+    margin-top: 15px;
+}
+
+/* =========================================
+   HISTÓRICO DE CONTAS
+========================================= */
+
+#tableHistoryList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 16px;
+    margin-top: 20px;
+}
+
+#tableHistoryList .table-card {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-left: 5px solid #64748b;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+#tableHistoryList .table-card h3 {
+    font-size: 18px;
+    margin-bottom: 12px;
+    color: #1e293b;
+}
+
+#tableHistoryList .table-card p {
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: #475569;
+}
+
+/* Destaque do valor total */
+#tableHistoryList .table-card p:first-of-type {
+    font-size: 17px;
+    font-weight: 700;
+    color: #16a34a;
+}
+
+/* Destaque da forma de pagamento */
+#tableHistoryList .table-card p:nth-of-type(2) {
+    font-weight: 600;
+    color: #2563eb;
+}
+
+/* =========================================
+   MODAL - DETALHES DA CONTA
+========================================= */
+
+.modal-detalhes-conta {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 9999;
+}
+
+/* Mantém o modal escondido até ser aberto */
+.modal-detalhes-conta[hidden] {
+    display: none;
+}
+
+.modal-detalhes-conteudo {
+    background: #ffffff;
+    width: 100%;
+    max-width: 550px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-detalhes-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-detalhes-cabecalho h2 {
+    font-size: 22px;
+    color: #1e293b;
+    margin: 0;
+}
+
+#fecharDetalhesConta {
+    background: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    width: 36px;
+    height: 36px;
+    font-size: 26px;
+    cursor: pointer;
+    color: #475569;
+}
+
+#fecharDetalhesConta:hover {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+#conteudoDetalhesConta {
+    color: #334155;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+@media (max-width: 600px) {
+    .modal-detalhes-conteudo {
+        padding: 18px;
+    }
+
+    .modal-detalhes-cabecalho h2 {
+        font-size: 19px;
+    }
+}
+
+/* Total da conta no modal */
+.total-detalhes-conta {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 10px;
+    color: #15803d;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* BOTÃO VER DETALHES DA CONTA */
+
+.btn-detalhes-conta {
+    background: #2563eb;
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    margin-top: 15px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.btn-detalhes-conta:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+.btn-detalhes-conta:active {
+    transform: scale(0.98);
+}

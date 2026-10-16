@@ -1009,6 +1009,75 @@ async function checkLogin() {
     }
 }
 
+/* ==========================================
+   AVISO DE VENCIMENTO DA ASSINATURA
+========================================== */
+
+async function verificarAvisoVencimentoAssinatura() {
+
+    if (!currentStoreSettingsId) {
+        console.log("Loja não identificada.");
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("subscriptions")
+        .select("status, subscription_ends_at")
+        .eq("store_id", currentStoreSettingsId)
+        .maybeSingle();
+
+    if (error) {
+        console.error(
+            "Erro ao verificar vencimento:",
+            error
+        );
+        return;
+    }
+
+    console.log("Assinatura da loja:", data);
+
+    if (!data?.subscription_ends_at) {
+        return;
+    }
+
+    const agora = new Date();
+    const vencimento = new Date(data.subscription_ends_at);
+
+    const diasRestantes = Math.ceil(
+        (vencimento.getTime() - agora.getTime()) /
+        (1000 * 60 * 60 * 24)
+    );
+
+
+    console.log(
+        "Dias restantes da assinatura:",
+        diasRestantes
+    );
+
+    if (
+        data.status === "active" &&
+        diasRestantes >= 0 &&
+        diasRestantes <= 5
+    ) {
+        const hoje = new Date().toLocaleDateString("en-CA");
+
+        const chaveAviso =
+            `aviso_assinatura_${currentStoreSettingsId}`;
+
+        const ultimoAviso = localStorage.getItem(chaveAviso);
+
+        if (ultimoAviso !== hoje) {
+
+            const mensagem = diasRestantes === 0
+                ? "Atenção! Sua assinatura vence hoje. Entre em contato para renovar."
+                : `Atenção! Sua assinatura vence em ${diasRestantes} dia(s). Entre em contato para renovar.`;
+            alert(mensagem);
+
+            localStorage.setItem(chaveAviso, hoje);
+        }
+    }
+}
+
 
 /* =========================================================
    MOSTRAR PAINEL
@@ -1025,15 +1094,18 @@ async function showAdminPanel() {
     );
 
     await carregarConfiguracoesLoja();
+    await verificarAvisoVencimentoAssinatura();
 
     await Promise.all([
         carregarProdutos(),
         carregarPedidos(),
         carregarCategorias(),
-        carregarCategoriasNoSelect()
+        carregarCategoriasNoSelect(),
+        carregarHistoricoContas()
     ]);
 
     iniciarRealtimePedidos();
+    iniciarRealtimeMesas();
 }
 
 
@@ -1056,6 +1128,11 @@ logoutButton?.addEventListener(
 
             ordersRealtimeChannel =
                 null;
+        }
+
+        if (canalRealtimeMesas) {
+            await supabaseClient.removeChannel(canalRealtimeMesas);
+            canalRealtimeMesas = null;
         }
 
         const {
@@ -1160,6 +1237,10 @@ async function carregarConfiguracoesLoja() {
 
     currentStoreSettingsId =
         data.id;
+
+    await carregarMesas();
+
+    iniciarRealtimeMesas();
 
     if (storePublicLink) {
         if (data.slug) {
@@ -1911,6 +1992,565 @@ refreshOrdersButton?.addEventListener(
     carregarPedidos
 );
 
+/* =========================================
+   GERENCIAMENTO DE MESAS
+========================================= */
+
+const addTableButton =
+    document.getElementById("addTableButton");
+
+const tablesList =
+    document.getElementById("tablesList");
+
+async function carregarHistoricoContas() {
+    const historicoLista =
+        document.getElementById("tableHistoryList");
+
+    if (!historicoLista || !currentStoreSettingsId) return;
+
+    historicoLista.textContent = "Carregando histórico...";
+
+    const { data, error } = await supabaseClient
+        .from("table_sessions")
+        .select(`
+            id,
+            table_id,
+            customer_name,
+            opened_at,
+            closed_at,
+            total_amount,
+            payment_method,
+         payment_status,
+    paid_at,
+    status,
+    restaurant_tables (
+        table_number
+    )
+`)
+        .eq("store_id", currentStoreSettingsId)
+        .eq("status", "closed")
+        .order("closed_at", { ascending: false });
+
+    if (error) {
+        console.error("Erro ao carregar histórico:", error);
+        historicoLista.textContent =
+            "Não foi possível carregar o histórico.";
+        return;
+    }
+
+    console.log("Histórico de contas fechadas:", data);
+
+    historicoLista.replaceChildren();
+
+    if (data.length === 0) {
+        historicoLista.textContent =
+            "Nenhuma conta fechada encontrada.";
+        return;
+    }
+
+    const formatarData = (valor) =>
+        valor
+            ? new Date(valor).toLocaleString("pt-BR")
+            : "Não informado";
+
+    const formatarValor = (valor) =>
+        Number(valor ?? 0).toLocaleString("pt-BR", {
+            style: "currency",
+            currency: "BRL"
+        });
+
+    data.forEach(conta => {
+        const card = document.createElement("div");
+        card.className = "table-card";
+
+        const titulo = document.createElement("h3");
+        titulo.textContent =
+            `Mesa ${String(conta.restaurant_tables?.table_number ?? "?").padStart(2, "0")} — Cliente: ${conta.customer_name || "Não informado"}`;
+
+        const detalhes = [
+            ["Total", formatarValor(conta.total_amount)],
+            ["Pagamento", conta.payment_method || "Não informado"],
+            ["Status", conta.payment_status || "Não informado"],
+            ["Abertura", formatarData(conta.opened_at)],
+            ["Fechamento", formatarData(conta.closed_at)]
+        ];
+
+        card.appendChild(titulo);
+
+        detalhes.forEach(([rotulo, valor]) => {
+            const linha = document.createElement("p");
+            linha.textContent = `${rotulo}: ${valor}`;
+            card.appendChild(linha);
+        });
+
+        // Botão para visualizar os produtos da conta
+        const btnDetalhes = document.createElement("button");
+
+        btnDetalhes.textContent = "Ver Detalhes";
+        btnDetalhes.className = "btn-detalhes-conta";
+        btnDetalhes.type = "button";
+
+        btnDetalhes.addEventListener("click", () => {
+            visualizarDetalhesConta(conta.id);
+        });
+
+        card.appendChild(btnDetalhes);
+
+        historicoLista.appendChild(card);
+    });
+
+}
+
+async function visualizarDetalhesConta(sessionId) {
+    try {
+        const { data, error } = await supabaseClient
+            .from("orders")
+            .select("id, order_number, items, total, created_at")
+            .eq("store_id", currentStoreSettingsId)
+            .eq("table_session_id", sessionId)
+            .order("created_at", { ascending: true });
+
+        if (error) {
+            console.error("Erro ao consultar pedidos:", error);
+            alert("Erro ao consultar os pedidos da conta.");
+            return;
+        }
+
+        console.log("Pedidos da conta:", data);
+        console.log(
+            "Produtos do pedido:",
+            JSON.stringify(data?.[0]?.items ?? [], null, 2)
+        );
+
+        const formatarMoeda = (valor) =>
+            Number(valor || 0).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL"
+            });
+
+        let mensagem = "DETALHES DA CONTA\n\n";
+
+        let totalGeral = 0;
+
+        data.forEach((pedido, indice) => {
+            mensagem += `PEDIDO ${indice + 1}\n`;
+
+            const produtos = Array.isArray(pedido.items)
+                ? pedido.items
+                : [];
+
+            produtos.forEach((produto) => {
+                const quantidade = Number(produto.quantity || 0);
+                const preco = Number(produto.price || 0);
+                const total = quantidade * preco;
+
+                mensagem +=
+                    `${produto.name} — ${quantidade}x\n` +
+                    `Subtotal: ${formatarMoeda(total)}\n\n`;
+            });
+
+            totalGeral += Number(pedido.total || 0);
+        });
+        // Adiciona o total geral ao final dos detalhes
+        mensagem += `\nTOTAL DA CONTA: ${formatarMoeda(totalGeral)}`;
+
+        const modal = document.getElementById("modalDetalhesConta");
+        const conteudo = document.getElementById("conteudoDetalhesConta");
+        const botaoFechar = document.getElementById("fecharDetalhesConta");
+
+        if (!modal || !conteudo || !botaoFechar) {
+            console.error("Elementos do modal não encontrados.");
+            alert(mensagem);
+            return;
+        }
+
+        // Exibe os detalhes preservando as quebras de linha
+        // Exibe os produtos e valores
+        conteudo.textContent = mensagem;
+        conteudo.style.whiteSpace = "pre-line";
+
+        // Destaca o total da conta
+        const textoTotal = `TOTAL DA CONTA: ${formatarMoeda(totalGeral)}`;
+
+        const posicaoTotal = mensagem.lastIndexOf(textoTotal);
+
+        if (posicaoTotal !== -1) {
+            const textoProdutos = mensagem.slice(0, posicaoTotal);
+
+            conteudo.textContent = textoProdutos;
+
+            const destaqueTotal = document.createElement("div");
+            destaqueTotal.className = "total-detalhes-conta";
+            destaqueTotal.textContent = textoTotal;
+
+            conteudo.appendChild(destaqueTotal);
+        }
+        // Abre o modal
+        modal.hidden = false;
+
+        // Fecha o modal
+        botaoFechar.onclick = () => {
+            modal.hidden = true;
+        };
+
+    } catch (error) {
+        console.error("Erro inesperado:", error);
+        alert("Não foi possível consultar os detalhes.");
+    }
+}
+
+async function carregarMesas() {
+
+    if (!currentStoreSettingsId || !tablesList) {
+        return;
+    }
+
+    const { data, error } = await supabaseClient
+        .from("restaurant_tables")
+        .select("id, table_number, name, status, is_active")
+        .eq("store_id", currentStoreSettingsId)
+        .order("table_number", { ascending: true });
+
+    if (error) {
+        console.error("Erro ao carregar mesas:", error);
+        tablesList.textContent = "Erro ao carregar mesas.";
+        return;
+    }
+
+    tablesList.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        tablesList.textContent = "Nenhuma mesa cadastrada.";
+        return;
+    }
+
+    data.forEach(mesa => {
+
+        const card = document.createElement("div");
+        card.className = "table-card";
+
+        const titulo = document.createElement("h3");
+        titulo.textContent = mesa.name || `Mesa ${mesa.table_number}`;
+
+        const status = document.createElement("p");
+        status.className = !mesa.is_active
+            ? "table-status-inactive"
+            : mesa.status === "free"
+                ? "table-status-free"
+                : mesa.status === "occupied"
+                    ? "table-status-occupied"
+                    : "";
+        status.textContent = mesa.is_active
+            ? (mesa.status === "free" ? "Livre" : "Status: " + mesa.status)
+            : "Desativada";
+
+        card.appendChild(titulo);
+        card.appendChild(status);
+
+        // Botão para desativar a mesa
+        if (mesa.is_active) {
+
+            const desativarButton =
+                document.createElement("button");
+
+            desativarButton.type = "button";
+            desativarButton.textContent = "Desativar Mesa";
+            desativarButton.className = "table-disable-button";
+
+
+            desativarButton.addEventListener("click", async () => {
+
+                const confirmar = confirm(
+                    `Deseja desativar a Mesa ${mesa.table_number}?`
+                );
+
+                if (!confirmar) return;
+
+                desativarButton.disabled = true;
+
+                const { data, error } = await supabaseClient
+                    .from("restaurant_tables")
+                    .update({
+                        is_active: false
+                    })
+                    .eq("id", mesa.id)
+                    .eq("store_id", currentStoreSettingsId)
+                    .select("id");
+
+                if (error || !data || data.length !== 1) {
+                    console.error("Erro ao desativar mesa:", error);
+                    alert("Não foi possível desativar a mesa.");
+                    desativarButton.disabled = false;
+                    return;
+                }
+
+                alert(`Mesa ${mesa.table_number} desativada com sucesso!`);
+
+                await carregarMesas();
+
+            });
+
+            card.appendChild(desativarButton);
+        }
+
+        else {
+
+            const ativarButton =
+                document.createElement("button");
+
+            ativarButton.type = "button";
+            ativarButton.textContent = "Ativar Mesa";
+            ativarButton.className = "table-activate-button";
+
+            ativarButton.addEventListener("click", async () => {
+
+                const confirmar = confirm(
+                    `Deseja ativar a Mesa ${mesa.table_number}?`
+                );
+
+                if (!confirmar) return;
+
+                ativarButton.disabled = true;
+
+                const { data, error } = await supabaseClient
+                    .from("restaurant_tables")
+                    .update({ is_active: true })
+                    .eq("id", mesa.id)
+                    .eq("store_id", currentStoreSettingsId)
+                    .select("id");
+
+                if (error || !data || data.length !== 1) {
+                    console.error("Erro ao ativar mesa:", error);
+                    alert("Não foi possível ativar a mesa.");
+                    ativarButton.disabled = false;
+                    return;
+                }
+
+                alert(`Mesa ${mesa.table_number} ativada com sucesso!`);
+
+                await carregarMesas();
+
+            });
+
+            card.appendChild(ativarButton);
+        }
+
+        // Botão Fechar Conta - somente mesas ocupadas
+        if (mesa.is_active && mesa.status === "occupied") {
+
+            const fecharContaButton =
+                document.createElement("button");
+
+            fecharContaButton.type = "button";
+            fecharContaButton.className = "table-close-button";
+            fecharContaButton.textContent = "Fechar Conta";
+            fecharContaButton.addEventListener("click", async () => {
+
+                const { data, error } = await supabaseClient
+                    .from("table_sessions")
+                    .select("id, table_id, customer_name, status")
+                    .eq("store_id", currentStoreSettingsId)
+                    .eq("table_id", mesa.id)
+                    .eq("status", "open")
+                    .maybeSingle();
+
+                if (error) {
+                    console.error("Erro ao consultar sessão:", error);
+                    alert("Erro ao consultar a sessão da mesa.");
+                    return;
+                }
+
+                if (!data) {
+                    alert("Nenhuma sessão aberta encontrada para esta mesa.");
+                    return;
+                }
+
+                console.log("Sessão encontrada:", data);
+
+                const { data: pedidosMesa, error: erroPedidos } =
+                    await supabaseClient
+                        .from("orders")
+                        .select("id, total, status")
+                        .eq("store_id", currentStoreSettingsId)
+                        .eq("table_session_id", data.id);
+
+                if (erroPedidos) {
+                    console.error("Erro ao consultar pedidos:", erroPedidos);
+                    alert("Erro ao consultar os pedidos da mesa.");
+                    return;
+                }
+
+                const totalConta = (pedidosMesa || [])
+                    .filter(pedido => pedido.status !== "cancelado")
+                    .reduce(
+                        (soma, pedido) => soma + Number(pedido.total || 0),
+                        0
+                    );
+
+                console.log("Pedidos da mesa:", pedidosMesa);
+                console.log("Total da conta:", totalConta);
+                const confirmarPagamento = confirm(
+                    `FECHAMENTO DA MESA ${mesa.table_number}\n\n` +
+                    `Cliente: ${data.customer_name}\n` +
+                    `Total: ${formatCurrency(totalConta)}\n\n` +
+                    `O pagamento foi recebido?\n\n` +
+                    `Clique em OK para confirmar ou Cancelar para voltar.`
+                );
+
+                if (!confirmarPagamento) {
+                    return;
+                }
+
+                const formaPagamento = prompt(
+                    "Informe a forma de pagamento:\n\n" +
+                    "1 - PIX\n" +
+                    "2 - Dinheiro\n" +
+                    "3 - Cartão"
+                );
+
+                if (formaPagamento === null) {
+                    return;
+                }
+
+                const formasPagamento = {
+                    "1": "pix",
+                    "2": "dinheiro",
+                    "3": "cartao"
+                };
+
+                const metodoPagamento = formasPagamento[formaPagamento];
+
+                if (!metodoPagamento) {
+                    alert("Forma de pagamento inválida.");
+                    return;
+                }
+
+                console.log("Forma de pagamento:", metodoPagamento);
+
+                const { data: sessaoPaga, error: erroPagamento } =
+                    await supabaseClient
+                        .from("table_sessions")
+                        .update({
+                            total_amount: totalConta,
+                            payment_method: metodoPagamento,
+                            payment_status: "paid",
+                            paid_at: new Date().toISOString(),
+                            status: "closed",
+                            closed_at: new Date().toISOString()
+                        })
+                        .eq("id", data.id)
+                        .eq("store_id", currentStoreSettingsId)
+                        .eq("table_id", mesa.id)
+                        .eq("status", "open")
+                        .eq("payment_status", "pending")
+                        .select("id");
+
+                if (erroPagamento || !sessaoPaga || sessaoPaga.length !== 1) {
+                    console.error("Erro ao registrar pagamento:", erroPagamento);
+                    alert("Não foi possível registrar o pagamento. Verifique a sessão.");
+                    return;
+                }
+
+                alert(
+                    `Pagamento registrado com sucesso!\n\n` +
+                    `Mesa: ${mesa.table_number}\n` +
+                    `Total: ${formatCurrency(totalConta)}\n` +
+                    `Forma de pagamento: ${metodoPagamento}\n\n` +
+                    `A mesa continua ocupada.`
+                );
+
+
+            });
+
+            card.appendChild(fecharContaButton);
+        }
+
+        tablesList.appendChild(card);
+    });
+}
+
+let canalRealtimeMesas = null;
+
+function iniciarRealtimeMesas() {
+    if (!currentStoreSettingsId) return;
+
+    if (canalRealtimeMesas) {
+        supabaseClient.removeChannel(canalRealtimeMesas);
+    }
+
+    canalRealtimeMesas = supabaseClient
+        .channel(`mesas-${currentStoreSettingsId}`)
+        .on(
+            "postgres_changes",
+            {
+                event: "*",
+                schema: "public",
+                table: "restaurant_tables",
+                filter: `store_id=eq.${currentStoreSettingsId}`
+            },
+            (payload) => {
+                console.log("Mesa atualizada em tempo real:", payload);
+                carregarMesas();
+            }
+        )
+        .subscribe((status) => {
+            console.log("Realtime das mesas:", status);
+        });
+}
+
+console.log(
+    "Loja atual do painel:",
+    currentStoreSettingsId
+);
+
+addTableButton?.addEventListener("click", async () => {
+
+    if (!currentStoreSettingsId) {
+        alert("Loja não identificada.");
+        return;
+    }
+
+    const numero = prompt("Digite o número da nova mesa:");
+
+    if (numero === null) return;
+
+    const numeroMesa = Number(numero.trim());
+
+    if (
+        !Number.isSafeInteger(numeroMesa) ||
+        numeroMesa <= 0
+    ) {
+        alert("Digite um número de mesa válido.");
+        return;
+    }
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("restaurant_tables")
+            .insert({
+                store_id: currentStoreSettingsId,
+                table_number: numeroMesa,
+                name: `Mesa ${String(numeroMesa).padStart(2, "0")}`,
+                status: "free",
+                is_active: true
+            })
+            .select()
+            .single();
+
+        if (error) {
+            console.error("Erro ao cadastrar mesa:", error);
+            alert("Não foi possível cadastrar a mesa: " + error.message);
+            return;
+        }
+
+        console.log("Mesa cadastrada:", data);
+        alert(`Mesa ${numeroMesa} cadastrada com sucesso!`);
+
+    } catch (error) {
+        console.error("Erro inesperado:", error);
+        alert("Ocorreu um erro ao cadastrar a mesa.");
+    }
+});
 
 /* =========================================================
    CONTADORES DOS PEDIDOS
@@ -2342,11 +2982,10 @@ function renderizarPedidos() {
                                             0
                                         );
 
-                                    const preco =
-                                        formatCurrency(
-                                            item.unit_price ||
-                                            0
-                                        );
+                                    const preco = formatCurrency(
+                                        (Number(item.unit_price ?? item.price ?? 0)) *
+                                        quantidade
+                                    );
 
                                     return `
                                         <div class="order-item">
@@ -2449,9 +3088,13 @@ function renderizarPedidos() {
 
                                 <div>
 
-                                    <h3>
-                                        Pedido #${numeroPedido}
-                                    </h3>
+                                  <h3>
+    Pedido #${numeroPedido}
+    ${pedido.order_type === "mesa"
+                            ? "🍽️ Pedido de Mesa"
+                            : ""
+                        }
+</h3>
 
                                     <span>
                                         ${dataPedido}
@@ -2551,6 +3194,7 @@ function renderizarPedidos() {
                         )}
                                 </p>
 
+                                ${pedido.order_type !== "mesa" ? `
                                 <p>
                                     <strong>
                                         Taxa de entrega:
@@ -2561,6 +3205,7 @@ function renderizarPedidos() {
                             0
                         )}
                                 </p>
+                                ` : ""}
 
                                 <p>
                                     <strong>

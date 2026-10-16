@@ -140,11 +140,98 @@ async function carregarAssinaturas() {
     }
 
     subscriptions = data || [];
+    await carregarHistoricoRenovacoes();
 
     console.log(
         "Assinaturas carregadas:",
         subscriptions
     );
+}
+
+// ==========================================
+// HISTÓRICO DE RENOVAÇÕES
+// ==========================================
+
+async function carregarHistoricoRenovacoes() {
+
+    const tabela = document.getElementById(
+        "renewalsHistoryTable"
+    );
+
+    if (!tabela) return;
+
+    const { data, error } = await supabaseClient
+        .rpc("list_subscription_renewals");
+
+    if (error) {
+        console.error(
+            "Erro ao carregar histórico de renovações:",
+            error
+        );
+
+        tabela.innerHTML = `
+            <tr>
+                <td colspan="4">
+                    Erro ao carregar histórico.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+    console.log("Histórico de renovações:", data);
+
+    // Limpa a tabela antes de exibir os registros
+    tabela.innerHTML = "";
+
+    const formatarData = (data) => {
+        if (!data) return "Não informado";
+
+        return new Date(data).toLocaleDateString("pt-BR", {
+            timeZone: "America/Fortaleza"
+        });
+    };
+
+    if (!data || data.length === 0) {
+        tabela.innerHTML = `
+        <tr>
+            <td colspan="4">
+                Nenhuma renovação encontrada.
+            </td>
+        </tr>
+    `;
+        return;
+    }
+
+    data.forEach((renovacao) => {
+
+        const linha = document.createElement("tr");
+
+        const assinatura = subscriptions.find(
+            (s) => s.id === renovacao.subscription_id
+        );
+
+        const loja = stores.find(
+            (s) => s.id === assinatura?.store_id
+        );
+
+        const valores = [
+            loja?.store_name || "Loja não identificada",
+            formatarData(renovacao.previous_ends_at),
+            formatarData(renovacao.new_ends_at),
+            formatarData(renovacao.created_at)
+        ];
+
+        valores.forEach((valor) => {
+            const coluna = document.createElement("td");
+            coluna.textContent = valor;
+            linha.appendChild(coluna);
+        });
+
+        tabela.appendChild(linha);
+    });
+
 }
 
 /* =========================================================
@@ -853,6 +940,175 @@ if (activateSubscriptionButton) {
             .textContent = novoVencimento;
 
         alert("Assinatura ativada com sucesso.");
+
+    });
+
+}
+
+// Guarda a operação de renovação em andamento
+let renovacaoPendente = null;
+
+/* =========================================
+   RENOVAR ASSINATURA - 30 DIAS
+========================================= */
+
+const renewSubscriptionButton =
+    document.getElementById("renewSubscriptionButton");
+
+if (renewSubscriptionButton) {
+
+    renewSubscriptionButton.addEventListener("click", async () => {
+
+        if (!selectedStore || !selectedSubscription) {
+            alert("Selecione uma loja válida.");
+            return;
+        }
+
+        console.log(
+            "Preparando renovação:",
+            selectedStore.store_name
+        );
+
+        // Consulta a assinatura atual no Supabase
+        const { data: assinatura, error } = await supabaseClient
+            .from("subscriptions")
+            .select("id, status, subscription_ends_at")
+            .eq("id", selectedSubscription.id)
+            .single();
+
+        if (error || !assinatura) {
+            console.error("Erro ao consultar assinatura:", error);
+            alert("Não foi possível consultar a assinatura.");
+            return;
+        }
+
+        // Não renovar lojas bloqueadas manualmente
+        if (assinatura.status === "blocked") {
+            alert("Esta loja está bloqueada. Verifique antes de renovar.");
+            return;
+        }
+
+        // Define a data-base da renovação
+        const agora = new Date();
+        const vencimentoAtual = assinatura.subscription_ends_at
+            ? new Date(assinatura.subscription_ends_at)
+            : null;
+
+        const dataBase =
+            vencimentoAtual &&
+                !Number.isNaN(vencimentoAtual.getTime()) &&
+                vencimentoAtual > agora
+                ? vencimentoAtual
+                : agora;
+
+        // Acrescenta 30 dias
+        const novoVencimento = new Date(
+            dataBase.getTime() + 30 * 24 * 60 * 60 * 1000
+        );
+
+        console.log(
+            "Novo vencimento calculado:",
+            novoVencimento.toLocaleString("pt-BR")
+        );
+
+        // Confirmação antes da renovação
+        const confirmarRenovacao = confirm(
+            `Deseja renovar a assinatura da loja "${selectedStore.store_name}"?\n\n` +
+            `Novo vencimento: ${novoVencimento.toLocaleString("pt-BR")}\n\n` +
+            `Confirme somente após receber o pagamento.`
+        );
+
+        if (!confirmarRenovacao) {
+            console.log("Renovação cancelada pelo administrador.");
+            return;
+        }
+
+        console.log("Renovação confirmada para:", selectedStore.store_name);
+
+        // Impede renovação se o vencimento mudou
+        // desde a consulta inicial
+        const { data: assinaturaAtualizada, error: erroConsulta } =
+            await supabaseClient
+                .from("subscriptions")
+                .select("subscription_ends_at")
+                .eq("id", assinatura.id)
+                .single();
+
+        if (erroConsulta || !assinaturaAtualizada) {
+            alert("Não foi possível validar a assinatura.");
+            return;
+        }
+
+        if (
+            assinaturaAtualizada.subscription_ends_at !==
+            assinatura.subscription_ends_at
+        ) {
+            alert(
+                "O vencimento foi alterado. Atualize o painel antes de renovar."
+            );
+            return;
+        }
+
+        console.log("Assinatura validada para renovação.");
+
+        // Identificador único para esta renovação
+        if (
+            !renovacaoPendente ||
+            renovacaoPendente.subscriptionId !== assinatura.id
+        ) {
+            renovacaoPendente = {
+                subscriptionId: assinatura.id,
+                operationId: crypto.randomUUID()
+            };
+        }
+
+        const operationId = renovacaoPendente.operationId;
+
+        console.log("ID da operação:", operationId);
+
+        console.log(
+            "Função Supabase preparada:",
+            "renew_subscription_30_days"
+        );
+
+        // Executa a renovação no Supabase
+        renewSubscriptionButton.disabled = true;
+
+        try {
+            const { data: novoVencimentoSalvo, error: erroRenovacao } =
+                await supabaseClient.rpc("renew_subscription_30_days", {
+                    p_subscription_id: assinatura.id,
+                    p_operation_id: operationId
+                });
+
+            if (erroRenovacao) {
+                console.error("Erro na renovação:", erroRenovacao);
+                alert("Não foi possível concluir a renovação. Verifique o console.");
+                return;
+            }
+
+            console.log("Renovação registrada:", novoVencimentoSalvo);
+
+            // Limpa a operação somente após confirmação do Supabase
+            renovacaoPendente = null;
+
+            await carregarAssinaturas();
+
+            await carregarHistoricoRenovacoes();
+
+            alert(
+                "Assinatura renovada com sucesso!\n\n" +
+                "Novo vencimento: " +
+                new Date(novoVencimentoSalvo).toLocaleString("pt-BR")
+            );
+
+        } catch (erro) {
+            console.error("Erro inesperado na renovação:", erro);
+            alert("Não foi possível confirmar a renovação.");
+        } finally {
+            renewSubscriptionButton.disabled = false;
+        }
+
 
     });
 

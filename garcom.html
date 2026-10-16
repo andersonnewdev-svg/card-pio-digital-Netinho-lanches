@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Painel do Garçom</title>
+
+    <link rel="stylesheet" href="garcom.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+
+    <script src="config/supabase.js" defer></script>
+
+    <script src="garcom.js" defer></script>
+</head>
+
+<body>
+
+    <header class="garcom-header">
+        <h1>Painel do Garçom</h1>
+        <p>Atendimento presencial</p>
+    </header>
+
+    <main class="garcom-container">
+
+        <section class="garcom-section">
+            <h2>Selecionar Mesa</h2>
+
+            <div id="listaMesas" class="mesas-grid">
+                <p>Carregando mesas...</p>
+            </div>
+        </section>
+
+        <section class="garcom-section" id="secaoAtendimento" hidden>
+
+            <h2 id="tituloMesa">Atendimento</h2>
+
+            <label for="nomeCliente">
+                Nome do cliente
+            </label>
+
+            <input type="text" id="nomeCliente" placeholder="Digite o nome do cliente" autocomplete="off">
+
+            <label for="cpfCliente">
+                CPF (opcional)
+            </label>
+
+            <input type="text" id="cpfCliente" placeholder="Somente se necessário" inputmode="numeric" maxlength="14">
+
+            <button type="button" id="abrirAtendimento">
+                Abrir atendimento
+            </button>
+
+        </section>
+
+        <section class="garcom-section" id="secaoProdutos" hidden>
+
+            <h2>Produtos do Cardápio</h2>
+
+            <div id="listaProdutos">
+                <p>Nenhum produto carregado.</p>
+            </div>
+
+        </section>
+
+        <section class="garcom-section" id="secaoPedido" hidden>
+
+            <h2>Resumo do Pedido</h2>
+
+            <div id="itensPedido"></div>
+
+            <p>
+                Total:
+                <strong id="totalPedido">R$ 0,00</strong>
+            </p>
+
+            <button type="button" id="enviarPedido">
+                Enviar pedido
+            </button>
+
+        </section>
+
+        <!-- =====================================
+     MESAS DO RESTAURANTE
+===================================== -->
+
+        <section class="waiter-tables-section">
+
+            <div class="section-header">
+                <h2>Mesas do Restaurante</h2>
+                <p>Selecione uma mesa para iniciar o atendimento.</p>
+            </div>
+
+            <div id="waiterTablesList" class="waiter-tables-list">
+                <p>Carregando mesas...</p>
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+
+</html>

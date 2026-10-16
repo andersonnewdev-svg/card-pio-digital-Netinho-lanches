@@ -302,6 +302,39 @@
 
                 </div>
 
+                <!-- HISTÓRICO DE RENOVAÇÕES -->
+                <div class="panel-card">
+
+                    <h3>Histórico de Renovações</h3>
+
+                    <p>
+                        Consulte as renovações de assinaturas
+                        realizadas pelas lojas.
+                    </p>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Loja</th>
+                                    <th>Vencimento anterior</th>
+                                    <th>Novo vencimento</th>
+                                    <th>Data da renovação</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="renewalsHistoryTable">
+                                <tr>
+                                    <td colspan="4">
+                                        Carregando histórico...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+
             </section>
 
         </main>
@@ -384,6 +417,10 @@
 
                     <button id="activateSubscriptionButton" type="button">
                         Ativar Assinatura
+                    </button>
+
+                    <button type="button" id="renewSubscriptionButton" class="btn-primary">
+                        Renovar +30 dias
                     </button>
 
                     <button id="changePlanButton" type="button">

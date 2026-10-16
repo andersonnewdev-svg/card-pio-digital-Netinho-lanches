@@ -1,49 +1,90 @@
-# 🍔 Nettinho Lanches — Cardápio Digital
+🍔 MenuHub SaaS — Plataforma de Cardápio Digital
 
-Cardápio digital responsivo desenvolvido para hamburguerias e lanchonetes, permitindo que o cliente escolha produtos, monte seu pedido e finalize diretamente pelo WhatsApp.
+Plataforma SaaS de cardápio digital desenvolvida com HTML, CSS, JavaScript e Supabase.
 
-<img width="1359" height="648" alt="Captura de tela 2026-08-25 200923" src="https://github.com/user-attachments/assets/0203b7e3-3aa6-4507-9f15-7f8de3e124ad" />
+O MenuHub permite gerenciar múltiplos estabelecimentos, oferecendo cardápio online, painel administrativo, controle de pedidos, mesas, garçons e gerenciamento de assinaturas.
 
-## 🌐 Demonstração
+O projeto começou com o cardápio digital do Nettinho Lanches e evoluiu para uma plataforma multi-loja.
 
-O projeto está publicado online através do GitHub Pages.
+🌐 Demonstração
 
-👉 [Acessar Cardápio Digital](https://andersonnewdev-svg.github.io/card-pio-digital-Netinho-lanches/)
+Primeira loja oficial: Nettinho Lanches
 
-## 🚀 Funcionalidades
+Acessar o cardápio oficial
 
-- 📱 Layout responsivo para celular e computador
-- 🍔 Produtos organizados por categorias
-- 🔎 Busca de produtos
-- ↕️ Ordenação por preço e nome
-- 🛒 Carrinho de compras
-- ➕ Controle de quantidade dos produtos
-- 💰 Cálculo automático do total
-- 📝 Observações nos produtos
-- 🏠 Dados para entrega
-- 💳 Seleção da forma de pagamento
-- 📲 Finalização do pedido pelo WhatsApp
-- 🔐 Painel administrativo
-- ➕ Cadastro de produtos
-- ✏️ Edição de produtos
-- 🗑️ Exclusão de produtos
-- 🟢 Controle de disponibilidade
-- 🖼️ Imagens dos produtos
-- ☁️ Integração com Supabase
+🚀 Funcionalidades
 
-## 🛠️ Tecnologias utilizadas
+🛒 Cardápio digital
 
-- HTML5
-- CSS3
-- JavaScript
-- Supabase
-- Git
-- GitHub
-- GitHub Pages
+* Layout responsivo para celular e computador
+* Produtos organizados por categorias
+* Busca e ordenação de produtos
+* Carrinho de compras
+* Controle de quantidades
+* Observações nos produtos
+* Cálculo automático de valores
+* Taxas de entrega por região
+* Formas de pagamento
+* Finalização de pedidos pelo WhatsApp
 
-## 📁 Estrutura do projeto
+🔐 Painel administrativo
 
-```text
+* Autenticação de usuários
+* Cadastro, edição e exclusão de produtos
+* Gerenciamento de categorias
+* Controle de disponibilidade
+* Imagens dos produtos
+* Gerenciamento de pedidos
+* Atualizações em tempo real com Supabase
+* Configurações individuais por estabelecimento
+
+🍽️ Mesas e garçons
+
+* Cadastro e gerenciamento de mesas
+* Controle de comandas
+* Acompanhamento de mesas ocupadas
+* Gerenciamento de itens das contas
+* Registro de pagamentos
+* Fechamento de contas
+* Histórico de contas fechadas
+* Interface específica para garçons
+
+Status: funcionalidades implementadas e testadas no ambiente de desenvolvimento. A publicação no painel oficial do Nettinho Lanches ainda está pendente.
+
+🏢 Plataforma SaaS
+
+* Estrutura multi-loja
+* Identificação de estabelecimentos por slug
+* Isolamento de dados por loja
+* Painel central de gerenciamento
+* Visualização de estabelecimentos cadastrados
+* Controle de planos e assinaturas
+* Ativação e bloqueio de lojas
+* Renovação manual de assinaturas por 30 dias
+* Controle de vencimentos
+* Histórico de renovações
+* Aviso de proximidade do vencimento no painel administrativo
+
+💳 Planos
+
+* Basic: plano inicial da plataforma
+* Pro: plano utilizado pelo Nettinho Lanches
+
+As assinaturas são gerenciadas manualmente pelo administrador do SaaS.
+
+🛠️ Tecnologias utilizadas
+
+* HTML5
+* CSS3
+* JavaScript
+* Supabase (PostgreSQL, Authentication e Realtime)
+* Vercel
+* Git
+* GitHub
+* Visual Studio Code
+
+📁 Estrutura do projeto
+
 Nettinho-Lanches/
 ├── index.html
 ├── style.css
@@ -51,6 +92,59 @@ Nettinho-Lanches/
 ├── admin.html
 ├── admin.css
 ├── admin.js
+├── garcom.html
+├── garcom.css
+├── garcom.js
+├── saas-admin.html
+├── saas-admin.css
+├── saas-admin.js
+├── saas-login.html
+├── saas-login.js
 ├── config/
 │   └── supabase.js
-└── imagens/
+├── imagens/
+└── README.md
+
+🗄️ Banco de dados
+
+O Supabase é utilizado para armazenar e gerenciar dados da plataforma.
+
+Entre os recursos implementados estão:
+
+* Configurações das lojas
+* Produtos e categorias
+* Pedidos
+* Assinaturas
+* Histórico de renovações
+* Mesas e comandas
+* Pagamentos e histórico de contas
+
+🏪 Primeira loja oficial
+
+Nettinho Lanches
+
+* Integração ao gerenciamento de assinaturas do MenuHub
+* Plano Pro ativo
+* Cardápio oficial funcionando na Vercel
+* Gerenciamento de produtos e pedidos
+* Módulo de mesas disponível no ambiente de desenvolvimento
+
+🔄 Status do projeto
+
+MenuHub SaaS — Em desenvolvimento
+
+A plataforma já possui funcionalidades multi-loja e gerenciamento de assinaturas implementadas.
+
+O próximo objetivo é concluir os testes, publicar as funcionalidades administrativas atualizadas e preparar a plataforma para receber novos estabelecimentos.
+
+👨‍💻 Desenvolvedor
+
+Anderson da Silva Medeiros
+
+Estudante de Ciência da Computação e desenvolvedor de aplicações web.
+
+GitHub
+
+⸻
+
+Projeto desenvolvido para aplicação prática de conhecimentos em desenvolvimento web, banco de dados e arquitetura SaaS.
