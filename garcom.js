@@ -6,6 +6,160 @@ document.addEventListener("DOMContentLoaded", async () => {
     let atendimentoAtual = null;
     let mesaAtual = null;
     let carrinhoGarcom = [];
+    let garcomAutenticado = null;
+    let lojaGarcom = null;
+    let mesas = [];
+    let canalRealtimeMesas = null;
+
+    const formularioLoginGarcom =
+        document.getElementById("formLoginGarcom");
+
+    if (formularioLoginGarcom) {
+        formularioLoginGarcom.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const nome = document
+                .getElementById("nomeGarcom")
+                .value.trim();
+
+            const pin = document
+                .getElementById("pinGarcom")
+                .value.trim();
+
+            const erroLogin =
+                document.getElementById("erroLoginGarcom");
+
+            if (!nome || !/^\d{6}$/.test(pin)) {
+                erroLogin.textContent =
+                    "Informe seu nome e um PIN de 6 dígitos.";
+                return;
+            }
+
+            erroLogin.textContent = "";
+
+            try {
+                const { data: loja, error: erroLoja } =
+                    await supabaseClient
+                        .from("store_settings")
+                        .select("id")
+                        .eq("slug", slugLoja)
+                        .single();
+
+                console.log("Slug consultado:", slugLoja);
+                console.log("Dados da loja:", loja);
+                console.log("Erro da consulta:", erroLoja);
+
+                if (erroLoja || !loja) {
+                    erroLogin.textContent =
+                        "Loja não encontrada.";
+                    return;
+                }
+
+                const { data, error } =
+                    await supabaseClient.functions.invoke(
+                        "login-garcom",
+                        {
+                            body: {
+                                store_id: loja.id,
+                                nome: nome,
+                                pin: pin
+                            }
+                        }
+                    );
+
+                if (error || !data?.token) {
+                    erroLogin.textContent =
+                        "Não foi possível realizar o login.";
+                    return;
+                }
+
+                console.log("Credenciais validadas pelo servidor.");
+
+                garcomAutenticado = {
+                    id: data.garcom.id,
+                    nome: data.garcom.nome,
+                    token: data.token
+                };
+
+                lojaGarcom = {
+                    store_id: loja.id
+                };
+
+                const { data: resultadoMesas, error: erroMesasTeste } =
+                    await supabaseClient.functions.invoke("mesas-garcom", {
+                        headers: {
+                            Authorization: `Bearer ${data.token}`
+                        },
+                        body: {}
+                    });
+
+                if (erroMesasTeste || !Array.isArray(resultadoMesas?.mesas)) {
+                    console.error(
+                        "Falha ao consultar mesas autorizadas:",
+                        erroMesasTeste,
+                        resultadoMesas
+                    );
+
+                    erroLogin.textContent =
+                        "Login validado, mas não foi possível carregar as mesas.";
+                    return;
+                }
+
+                mesas = resultadoMesas.mesas;
+
+                console.log("Mesas autorizadas:", mesas.length);
+                const listaMesas = document.getElementById("listaMesas");
+
+                if (listaMesas) {
+                    listaMesas.innerHTML = "";
+
+                    mesas.forEach(mesa => {
+                        const card = document.createElement("div");
+                        card.className = "waiter-table-card";
+
+                        card.style.cursor = "pointer";
+
+                        card.addEventListener("click", () => {
+                            console.log("Mesa selecionada:", mesa);
+                        });
+
+                        const titulo = document.createElement("h3");
+                        titulo.textContent =
+                            mesa.name || `Mesa ${mesa.table_number}`;
+
+                        const status = document.createElement("p");
+                        status.textContent =
+                            mesa.status === "free" ? "Livre" : "Ocupada";
+
+                        card.appendChild(titulo);
+                        card.appendChild(status);
+                        listaMesas.appendChild(card);
+                    });
+                }
+                document.getElementById("loginGarcom").hidden = true;
+
+                document.getElementById("painelGarcom").hidden = false;
+                await carregarMesasAposLogin();
+                iniciarRealtimeMesasGarcom();
+
+                erroLogin.textContent = "";
+
+                erroLogin.textContent =
+                    "PIN validado. Acesso ao painel ainda não liberado.";
+
+            } catch (erro) {
+                console.error("Erro ao realizar login:", erro);
+
+                erroLogin.textContent =
+                    "Erro de comunicação. Tente novamente.";
+            }
+        });
+    }
+    const parametrosURL = new URLSearchParams(window.location.search);
+
+    const slugLoja = parametrosURL.get("loja");
+
+    console.log("Loja informada na URL:", slugLoja);
 
     function mostrarAtendimentoAtual() {
 
@@ -44,43 +198,6 @@ document.addEventListener("DOMContentLoaded", async () => {
         return;
     }
 
-    const { data: authData, error: authError } =
-        await supabaseClient.auth.getUser();
-
-    if (authError || !authData?.user) {
-        console.warn("Usuário não autenticado.");
-        return;
-    }
-
-    const usuario = authData.user;
-
-    const { data: funcionarios, error } =
-        await supabaseClient
-            .from("store_staff")
-            .select("id, store_id, name, role, is_active")
-            .eq("user_id", usuario.id)
-            .eq("role", "waiter")
-            .eq("is_active", true);
-
-    if (error) {
-        console.error(
-            "Erro ao consultar funcionário:",
-            error
-        );
-        return;
-    }
-
-    if (!funcionarios || funcionarios.length === 0) {
-        console.warn(
-            "Usuário sem vínculo ativo de garçom."
-        );
-        return;
-    }
-
-    console.log(
-        "Vínculos de garçom encontrados:",
-        funcionarios
-    );
     async function carregarProdutosGarcom() {
 
         if (!lojaGarcom?.store_id) {
@@ -336,187 +453,228 @@ document.addEventListener("DOMContentLoaded", async () => {
        CARREGAR MESAS DA LOJA
     ========================================= */
 
-    const lojaGarcom = funcionarios.find(
-        funcionario =>
-            funcionario.store_id ===
-            "071f4900-ce84-46fc-8b0b-106fc718f197"
-    );
+    async function carregarMesasAposLogin() {
 
-    if (!lojaGarcom) {
-        console.warn(
-            "Garçom não vinculado à Loja Automática."
-        );
-        return;
-    }
+        if (!garcomAutenticado?.token) {
+            console.warn("Garçom ainda não autenticado.");
+            return;
+        }
 
-    const { data: mesas, error: erroMesas } =
-        await supabaseClient
-            .from("restaurant_tables")
-            .select("id, table_number, name, status, is_active")
-            .eq("store_id", lojaGarcom.store_id)
-            .eq("is_active", true)
-            .order("table_number", { ascending: true });
+        const { data: resultadoMesas, error: erroMesas } =
+            await supabaseClient.functions.invoke("mesas-garcom", {
+                headers: {
+                    Authorization: `Bearer ${garcomAutenticado?.token || ""}`
+                },
+                body: {}
+            });
 
-    if (erroMesas) {
-        console.error(
-            "Erro ao carregar mesas:",
-            erroMesas
-        );
-        return;
-    }
+        const mesasConsultadas = resultadoMesas?.mesas || [];
 
-    console.log("Mesas da Loja Automática:", mesas);
+        if (erroMesas) {
+            console.error(
+                "Erro ao carregar mesas:",
+                erroMesas
+            );
+            return;
+        }
 
-    const waiterTablesList =
-        document.getElementById("waiterTablesList");
+        mesas = mesasConsultadas || [];
 
-    if (waiterTablesList) {
+        console.log("Mesas da Loja Automática:", mesas);
 
-        waiterTablesList.innerHTML = "";
+        const waiterTablesList =
+            document.getElementById("listaMesas");
 
-        if (!mesas || mesas.length === 0) {
+        if (waiterTablesList) {
 
-            waiterTablesList.textContent =
-                "Nenhuma mesa disponível.";
+            waiterTablesList.innerHTML = "";
 
-        } else {
+            if (!mesas || mesas.length === 0) {
 
-            mesas.forEach(mesa => {
+                waiterTablesList.textContent =
+                    "Nenhuma mesa disponível.";
 
-                const card = document.createElement("div");
-                card.className = "waiter-table-card";
+            } else {
 
-                const titulo = document.createElement("h3");
-                titulo.textContent =
-                    mesa.name || `Mesa ${mesa.table_number}`;
+                mesas.forEach(mesa => {
 
-                const status = document.createElement("p");
+                    const card = document.createElement("div");
+                    card.className = "waiter-table-card";
 
-                status.textContent =
-                    mesa.status === "free"
-                        ? "Livre"
-                        : "Ocupada";
+                    const titulo = document.createElement("h3");
+                    titulo.textContent =
+                        mesa.name || `Mesa ${mesa.table_number}`;
 
-                card.appendChild(titulo);
-                card.appendChild(status);
+                    const status = document.createElement("p");
 
-                const iniciarButton =
-                    document.createElement("button");
+                    status.textContent =
+                        mesa.status === "free"
+                            ? "Livre"
+                            : "Ocupada";
 
-                iniciarButton.type = "button";
-                iniciarButton.className =
-                    "waiter-start-button";
+                    card.appendChild(titulo);
+                    card.appendChild(status);
 
-                iniciarButton.textContent =
-                    mesa.status === "free"
-                        ? "Iniciar Atendimento"
-                        : "Continuar Atendimento";
+                    const iniciarButton =
+                        document.createElement("button");
 
-                iniciarButton.disabled = false;
+                    iniciarButton.type = "button";
+                    iniciarButton.className =
+                        "waiter-start-button";
 
-                iniciarButton.addEventListener("click", async () => {
-
-                    if (mesa.status !== "free") {
-
-                        const { data: atendimento, error } =
-                            await supabaseClient
-                                .from("table_sessions")
-                                .select("id, customer_name, status")
-                                .eq("store_id", lojaGarcom.store_id)
-                                .eq("table_id", mesa.id)
-                                .eq("status", "open")
-                                .maybeSingle();
-
-                        if (error) {
-                            console.error("Erro ao consultar atendimento:", error);
-                            alert("Não foi possível consultar o atendimento.");
-                            return;
-                        }
-
-                        if (!atendimento) {
-                            alert("Nenhum atendimento aberto encontrado para esta mesa.");
-                            return;
-                        }
-
-                        atendimentoAtual = atendimento;
-                        mesaAtual = mesa;
-
-                        mostrarAtendimentoAtual();
-
-                        alert(
-                            `Atendimento encontrado!\n` +
-                            `Mesa: ${mesa.table_number}\n` +
-                            `Cliente: ${atendimento.customer_name}`
-                        );
-
-                        return;
-                    }
-
-                    const nomeCliente = prompt(
-                        `Mesa ${mesa.table_number}\n\nDigite o nome do cliente:`
-                    );
-
-                    if (nomeCliente === null) return;
-
-                    if (!nomeCliente.trim()) {
-                        alert("Informe o nome do cliente.");
-                        return;
-                    }
-
-                    const cpfCliente = prompt(
-                        "Digite o CPF do cliente (opcional):"
-                    );
-
-                    if (cpfCliente === null) return;
-
-                    iniciarButton.disabled = true;
-
-                    const { data: atendimento, error: erroAtendimento } =
-                        await supabaseClient
-                            .from("table_sessions")
-                            .insert({
-                                store_id: lojaGarcom.store_id,
-                                table_id: mesa.id,
-                                customer_name: nomeCliente.trim(),
-                                customer_cpf: cpfCliente.trim() || null,
-                                status: "open"
-                            })
-
-                    if (erroAtendimento) {
-                        console.error(
-                            "Erro ao iniciar atendimento:",
-                            erroAtendimento
-                        );
-
-                        alert("Não foi possível iniciar o atendimento.");
-                        iniciarButton.disabled = false;
-                        return;
-                    }
-
-                    console.log("Atendimento criado:", atendimento);
-
-                    alert(
-                        `Atendimento iniciado com sucesso!\n` +
-                        `Mesa: ${mesa.table_number}\n` +
-                        `Cliente: ${nomeCliente.trim()}`
-                    );
-
-                    status.textContent = "Ocupada";
-                    mesa.status = "occupied";
-                    iniciarButton.textContent = "Continuar Atendimento";
+                    iniciarButton.textContent =
+                        mesa.status === "free"
+                            ? "Iniciar Atendimento"
+                            : "Continuar Atendimento";
 
                     iniciarButton.disabled = false;
 
+                    iniciarButton.addEventListener("click", async () => {
+
+                        if (mesa.status !== "free") {
+
+                            const { data: atendimento, error } =
+                                await supabaseClient
+                                    .from("table_sessions")
+                                    .select("id, customer_name, status")
+                                    .eq("store_id", lojaGarcom.store_id)
+                                    .eq("table_id", mesa.id)
+                                    .eq("status", "open")
+                                    .maybeSingle();
+
+                            if (error) {
+                                console.error("Erro ao consultar atendimento:", error);
+                                alert("Não foi possível consultar o atendimento.");
+                                return;
+                            }
+
+                            if (!atendimento) {
+                                alert("Nenhum atendimento aberto encontrado para esta mesa.");
+                                return;
+                            }
+
+                            atendimentoAtual = atendimento;
+                            mesaAtual = mesa;
+
+                            mostrarAtendimentoAtual();
+
+                            alert(
+                                `Atendimento encontrado!\n` +
+                                `Mesa: ${mesa.table_number}\n` +
+                                `Cliente: ${atendimento.customer_name}`
+                            );
+
+                            return;
+                        }
+
+                        const nomeCliente = prompt(
+                            `Mesa ${mesa.table_number}\n\nDigite o nome do cliente:`
+                        );
+
+                        if (nomeCliente === null) return;
+
+                        if (!nomeCliente.trim()) {
+                            alert("Informe o nome do cliente.");
+                            return;
+                        }
+
+                        const cpfCliente = prompt(
+                            "Digite o CPF do cliente (opcional):"
+                        );
+
+                        if (cpfCliente === null) return;
+
+                        iniciarButton.disabled = true;
+
+                        const { data: atendimento, error: erroAtendimento } =
+                            await supabaseClient
+                                .from("table_sessions")
+                                .insert({
+                                    store_id: lojaGarcom.store_id,
+                                    table_id: mesa.id,
+                                    customer_name: nomeCliente.trim(),
+                                    customer_cpf: cpfCliente.trim() || null,
+                                    status: "open"
+                                })
+
+                        if (erroAtendimento) {
+                            console.error(
+                                "Erro ao iniciar atendimento:",
+                                erroAtendimento
+                            );
+
+                            alert("Não foi possível iniciar o atendimento.");
+                            iniciarButton.disabled = false;
+                            return;
+                        }
+
+                        console.log("Atendimento criado:", atendimento);
+
+                        alert(
+                            `Atendimento iniciado com sucesso!\n` +
+                            `Mesa: ${mesa.table_number}\n` +
+                            `Cliente: ${nomeCliente.trim()}`
+                        );
+
+                        status.textContent = "Ocupada";
+                        mesa.status = "occupied";
+                        iniciarButton.textContent = "Continuar Atendimento";
+
+                        iniciarButton.disabled = false;
+
+                    });
+
+                    card.appendChild(iniciarButton);
+
+                    waiterTablesList.appendChild(card);
+
                 });
 
-                card.appendChild(iniciarButton);
-
-                waiterTablesList.appendChild(card);
-
-            });
+            }
 
         }
-
     }
 
+
+    function iniciarRealtimeMesasGarcom() {
+        if (!lojaGarcom?.store_id || canalRealtimeMesas) return;
+
+        canalRealtimeMesas = supabaseClient
+            .channel(`mesas-garcom-${lojaGarcom.store_id}`)
+            .on(
+                "postgres_changes",
+                {
+                    event: "UPDATE",
+                    schema: "public",
+                    table: "restaurant_tables",
+                    filter: `store_id=eq.${lojaGarcom.store_id}`
+                },
+                async (payload) => {
+                    console.log("Mesa atualizada em tempo real!", payload);
+
+                    await carregarMesasAposLogin();
+
+                    if (
+                        mesaAtual &&
+                        payload.new?.id === mesaAtual.id &&
+                        payload.new?.status === "free"
+                    ) {
+                        atendimentoAtual = null;
+                        mesaAtual = null;
+                        carrinhoGarcom = [];
+
+                        atualizarResumoPedido();
+
+                        document.getElementById("secaoProdutos").hidden = true;
+                        document.getElementById("secaoPedido").hidden = true;
+
+                        console.log("Atendimento encerrado. Carrinho limpo.");
+                    }
+                }
+            )
+            .subscribe((status) => {
+                console.log("Realtime mesas:", status);
+            });
+    }
 });
+

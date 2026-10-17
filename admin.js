@@ -995,7 +995,7 @@ async function checkLogin() {
 
     if (data.session) {
 
-        showAdminPanel();
+        await showAdminPanel();
 
     } else {
 
@@ -5071,6 +5071,157 @@ adminSearch?.addEventListener(
     }
 );
 
+/* =========================================
+   GERENCIAMENTO DE GARÇONS
+========================================= */
+
+function iniciarGerenciamentoGarcons() {
+    carregarGarcons();
+
+    const botaoNovoGarcom =
+        document.getElementById("addWaiterButton");
+
+    if (!botaoNovoGarcom) {
+        console.warn("Botão Novo Garçom não encontrado.");
+        return;
+    }
+
+    botaoNovoGarcom.addEventListener("click", () => {
+
+        const formulario =
+            document.getElementById("waiterFormContainer");
+
+        if (!formulario) {
+            console.error("Formulário de garçom não encontrado.");
+            return;
+        }
+
+        formulario.classList.remove("hidden");
+
+    });
+
+    const botaoCancelarGarcom =
+        document.getElementById("cancelWaiterButton");
+
+    if (botaoCancelarGarcom) {
+
+        botaoCancelarGarcom.addEventListener("click", () => {
+
+            const formulario =
+                document.getElementById("waiterFormContainer");
+
+            if (formulario) {
+                formulario.classList.add("hidden");
+            }
+
+        });
+
+    }
+
+    const formularioGarcom =
+        document.getElementById("waiterForm");
+
+    if (formularioGarcom) {
+
+        formularioGarcom.addEventListener("submit", async (event) => {
+
+            event.preventDefault();
+
+            const nomeGarcom =
+                document.getElementById("waiterName").value.trim();
+
+            const pinGarcom =
+                document.getElementById("waiterPin").value.trim();
+
+            if (!nomeGarcom || !/^\d{6}$/.test(pinGarcom)) {
+                alert("Informe o nome e um PIN de 6 números.");
+                return;
+            }
+
+            try {
+                const { data, error } = await supabaseClient.rpc(
+                    "cadastrar_garcom",
+                    {
+                        p_store_id: currentStoreSettingsId,
+                        p_nome: nomeGarcom,
+                        p_pin: pinGarcom
+                    }
+                );
+
+                if (error) throw error;
+
+                alert("Garçom cadastrado com sucesso!");
+
+                await carregarGarcons();
+
+                formularioGarcom.reset();
+
+                document
+                    .getElementById("waiterFormContainer")
+                    .classList.add("hidden");
+
+            } catch (error) {
+                console.error("Erro ao cadastrar garçom:", error);
+                alert("Não foi possível cadastrar o garçom.");
+            }
+
+        });
+
+    }
+}
+
+async function carregarGarcons() {
+
+    const lista = document.getElementById("waitersList");
+
+    if (!lista || !currentStoreSettingsId) return;
+
+    lista.textContent = "Carregando garçons...";
+
+    try {
+
+        const { data, error } = await supabaseClient
+            .from("store_staff")
+            .select("id, name, role, is_active")
+            .eq("store_id", currentStoreSettingsId)
+            .eq("role", "waiter")
+            .order("name", { ascending: true });
+
+        if (error) throw error;
+
+        lista.replaceChildren();
+
+        if (!data || data.length === 0) {
+            lista.textContent = "Nenhum garçom cadastrado.";
+            return;
+        }
+
+        data.forEach(garcom => {
+
+            const item = document.createElement("div");
+            item.className = "waiter-item";
+
+            const nome = document.createElement("strong");
+            nome.textContent = garcom.name;
+
+            const status = document.createElement("span");
+            status.textContent = garcom.is_active
+                ? " — Ativo"
+                : " — Inativo";
+
+            item.append(nome, status);
+            lista.appendChild(item);
+
+        });
+
+    } catch (error) {
+
+        console.error("Erro ao carregar garçons:", error);
+        lista.textContent = "Erro ao carregar garçons.";
+
+    }
+}
+
 
 /* =========================================================
    INICIALIZAÇÃO
@@ -5081,6 +5232,7 @@ async function iniciarAdmin() {
 
 
     await checkLogin();
+    iniciarGerenciamentoGarcons();
 }
 
 

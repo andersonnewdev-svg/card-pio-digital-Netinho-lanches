@@ -364,3 +364,7 @@ button:focus-visible,
         grid-template-columns: 1fr;
     }
 }
+
+.waiter-tables-section[hidden] {
+    display: none !important;
+}

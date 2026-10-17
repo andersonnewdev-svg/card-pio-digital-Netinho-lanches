@@ -17,88 +17,110 @@
 
 <body>
 
-    <header class="garcom-header">
-        <h1>Painel do Garçom</h1>
-        <p>Atendimento presencial</p>
-    </header>
+    <!-- LOGIN DO GARÇOM -->
+    <section id="loginGarcom" class="garcom-login">
 
-    <main class="garcom-container">
+        <h2>Acesso do Garçom</h2>
 
-        <section class="garcom-section">
-            <h2>Selecionar Mesa</h2>
+        <p>Informe seu código de acesso</p>
 
-            <div id="listaMesas" class="mesas-grid">
-                <p>Carregando mesas...</p>
-            </div>
-        </section>
+        <form id="formLoginGarcom">
+            <label for="nomeGarcom">Nome do Garçom</label>
 
-        <section class="garcom-section" id="secaoAtendimento" hidden>
+            <input type="text" id="nomeGarcom" placeholder="Digite seu nome" autocomplete="username" required>
 
-            <h2 id="tituloMesa">Atendimento</h2>
+            <label for="pinGarcom">Código PIN</label>
 
-            <label for="nomeCliente">
-                Nome do cliente
-            </label>
+            <input type="password" id="pinGarcom" placeholder="Digite seu PIN" inputmode="numeric" autocomplete="off"
+                required>
 
-            <input type="text" id="nomeCliente" placeholder="Digite o nome do cliente" autocomplete="off">
-
-            <label for="cpfCliente">
-                CPF (opcional)
-            </label>
-
-            <input type="text" id="cpfCliente" placeholder="Somente se necessário" inputmode="numeric" maxlength="14">
-
-            <button type="button" id="abrirAtendimento">
-                Abrir atendimento
+            <button type="submit">
+                Entrar
             </button>
 
-        </section>
+        </form>
 
-        <section class="garcom-section" id="secaoProdutos" hidden>
+        <p id="erroLoginGarcom" role="alert"></p>
 
-            <h2>Produtos do Cardápio</h2>
+    </section>
 
-            <div id="listaProdutos">
-                <p>Nenhum produto carregado.</p>
-            </div>
+    <div id="painelGarcom" hidden>
 
-        </section>
+        <header class="garcom-header">
+            <h1>Painel do Garçom</h1>
+            <p>Atendimento presencial</p>
+        </header>
 
-        <section class="garcom-section" id="secaoPedido" hidden>
+        <main class="garcom-container">
 
-            <h2>Resumo do Pedido</h2>
+            <section class="garcom-section">
+                <h2>Selecionar Mesa</h2>
 
-            <div id="itensPedido"></div>
+                <div id="listaMesas" class="mesas-grid">
+                    <p>Carregando mesas...</p>
+                </div>
+            </section>
 
-            <p>
-                Total:
-                <strong id="totalPedido">R$ 0,00</strong>
-            </p>
+            <section class="garcom-section" id="secaoAtendimento" hidden>
 
-            <button type="button" id="enviarPedido">
-                Enviar pedido
-            </button>
+                <h2 id="tituloMesa">Atendimento</h2>
 
-        </section>
+                <label for="nomeCliente">
+                    Nome do cliente
+                </label>
 
-        <!-- =====================================
+                <input type="text" id="nomeCliente" placeholder="Digite o nome do cliente" autocomplete="off">
+
+                <label for="cpfCliente">
+                    CPF (opcional)
+                </label>
+
+                <input type="text" id="cpfCliente" placeholder="Somente se necessário" inputmode="numeric"
+                    maxlength="14">
+
+                <button type="button" id="abrirAtendimento">
+                    Abrir atendimento
+                </button>
+
+            </section>
+
+            <section class="garcom-section" id="secaoProdutos" hidden>
+
+                <h2>Produtos do Cardápio</h2>
+
+                <div id="listaProdutos">
+                    <p>Nenhum produto carregado.</p>
+                </div>
+
+            </section>
+
+            <section class="garcom-section" id="secaoPedido" hidden>
+
+                <h2>Resumo do Pedido</h2>
+
+                <div id="itensPedido"></div>
+
+                <p>
+                    Total:
+                    <strong id="totalPedido">R$ 0,00</strong>
+                </p>
+
+                <button type="button" id="enviarPedido">
+                    Enviar pedido
+                </button>
+
+            </section>
+
+            <!-- =====================================
      MESAS DO RESTAURANTE
 ===================================== -->
 
-        <section class="waiter-tables-section">
+            <section class="waiter-tables-section" hidden></section>
 
-            <div class="section-header">
-                <h2>Mesas do Restaurante</h2>
-                <p>Selecione uma mesa para iniciar o atendimento.</p>
-            </div>
 
-            <div id="waiterTablesList" class="waiter-tables-list">
-                <p>Carregando mesas...</p>
-            </div>
+        </main>
 
-        </section>
-
-    </main>
+    </div> <!-- Fim do painelGarcom -->
 
 </body>
 

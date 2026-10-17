@@ -675,6 +675,62 @@
             </section>
 
             <!-- ==========================================
+     GERENCIAMENTO DE GARÇONS
+========================================== -->
+
+            <section class="admin-section" id="staffSection">
+
+                <div class="admin-section-header">
+                    <div>
+                        <h2>Gerenciar Garçons</h2>
+                        <p>Cadastre e gerencie os garçons do restaurante.</p>
+                    </div>
+                </div>
+
+                <div class="tables-actions">
+                    <button type="button" id="addWaiterButton" class="primary-button">
+                        + Novo Garçom
+                    </button>
+                </div>
+
+                <div id="waitersList" class="tables-list">
+                    <p>Nenhum garçom carregado.</p>
+                </div>
+
+                <div id="waiterFormContainer" class="hidden">
+
+                    <h3>Cadastrar Novo Garçom</h3>
+
+                    <form id="waiterForm">
+
+                        <div class="form-group">
+                            <label for="waiterName">Nome do garçom</label>
+                            <input type="text" id="waiterName" placeholder="Digite o nome do garçom" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="waiterPin">PIN de acesso</label>
+
+                            <input type="password" id="waiterPin" placeholder="Digite um PIN de 6 números"
+                                inputmode="numeric" pattern="[0-9]{6}" minlength="6" maxlength="6"
+                                autocomplete="new-password" required>
+                        </div>
+
+                        <button type="submit" class="primary-button">
+                            Salvar Garçom
+                        </button>
+
+                        <button type="button" id="cancelWaiterButton">
+                            Cancelar
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </section>
+
+            <!-- ==========================================
      HISTÓRICO DE CONTAS FECHADAS
 ========================================== -->
 
